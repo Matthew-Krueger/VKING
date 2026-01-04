@@ -32,7 +32,6 @@ export module VKING.Log;
 export namespace VKING {
     class Log {
     public:
-
         using Level = spdlog::level::level_enum;
 
         static constexpr auto DEFAULT_LOG_PATTERN = "%^[%Y-%m-%d %H:%M:%S.%f] [%n] [%l] [%s:%#] %v %$";
@@ -61,7 +60,7 @@ export namespace VKING {
         struct Named {
             // Core logging function — uses spdlog's macro-based stripping
             template <spdlog::level::level_enum Level, typename... Args>
-            static void log(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
+            static void log(const std::source_location& loc, fmt::format_string<Args...> fmt, Args&&... args) {
                 auto logger = get();  // your Named logger
                 logger->log(spdlog::source_loc{
                         loc.file_name(),
@@ -74,35 +73,43 @@ export namespace VKING {
                 );
             }
 
-            // Convenience level functions
-            template <typename... Args>
-            static void trace(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::trace>(fmt, std::forward<Args>(args)..., loc);
-            }
+            struct LowWriter {
+                std::source_location loc;
 
-            template <typename... Args>
-            static void debug(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::debug>(fmt, std::forward<Args>(args)..., loc);
-            }
+                // Convenience level functions
+                template <typename... Args>
+                void trace(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::trace>(loc, fmt, std::forward<Args>(args)...);
+                }
 
-            template <typename... Args>
-            static void info(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::info>(fmt, std::forward<Args>(args)..., loc);
-            }
+                template <typename... Args>
+                void debug(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::debug>(loc, fmt, std::forward<Args>(args)...);
+                }
 
-            template <typename... Args>
-            static void warn(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::warn>(fmt, std::forward<Args>(args)..., loc);
-            }
+                template <typename... Args>
+                void info(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::info>(loc, fmt, std::forward<Args>(args)...);
+                }
 
-            template <typename... Args>
-            static void error(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::err>(fmt, std::forward<Args>(args)..., loc);
-            }
+                template <typename... Args>
+                void warn(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::warn>(loc, fmt, std::forward<Args>(args)...);
+                }
 
-            template <typename... Args>
-            static void critical(std::string_view fmt, Args&&... args, const std::source_location& loc = std::source_location::current()) {
-                log<spdlog::level::critical>(fmt, std::forward<Args>(args)..., loc);
+                template <typename... Args>
+                void error(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::err>(loc, fmt, std::forward<Args>(args)...);
+                }
+
+                template <typename... Args>
+                void critical(fmt::format_string<Args...> fmt, Args&&... args) {
+                    log<spdlog::level::critical>(loc, fmt, std::forward<Args>(args)...);
+                }
+            };
+
+            static constexpr auto record(const std::source_location& loc = std::source_location::current()) {
+                return LowWriter{loc};
             }
 
             // Access the underlying spdlog logger (for advanced use: flush, set_level, etc.)

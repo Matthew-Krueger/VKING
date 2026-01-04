@@ -27,16 +27,18 @@ int main() {
     VKING::Log::Init("LogFile.log");
     VKING::Log::setLevel(VKING::Log::Level::debug);
 
-    Log::critical("Starting up");
+    Log::record().critical("Starting up");
 
-    Log::debug("Hello, World!");
+    Log::record().debug("Hello, World!");
 
-    Log::critical("Hello, World!");
+    Log::record().critical("Hello, World!");
 
     glm::vec3 f(1.0,2.0,1.0);
 
+    Log::record().critical("Hello, World! Your name is {}", "Matthew");
 
-    VKING::Log::Named<"Test">::info("Value: {}", 42);
+
+    VKING::Log::Named<"Test">::record().info("Value: {}", 42);
 
     auto z = f * 3.0f;
 
