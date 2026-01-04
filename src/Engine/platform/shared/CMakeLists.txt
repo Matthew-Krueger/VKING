@@ -28,7 +28,7 @@ target_sources(VKING_Engine_Shared_Resources
         PUBLIC
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
-        #src/VKING.Engine.Math.ixx
+        src/VKING/Log.ixx
 )
 
 # -----------------------------------------------------------------------------
@@ -84,17 +84,10 @@ target_link_libraries(VKING_Engine_Shared_Resources
         # Internal dependency – not propagated to consumers
         PUBLIC
         glm::glm
+        spdlog::spdlog
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )
-
-if(BUILD_WITH_OPENMP)
-    target_link_libraries(
-            VKING_Engine_Shared_Resources
-            PUBLIC
-            OpenMP::OpenMP_CXX
-    )
-endif()
 
 # ==============================================================================
 # Usage example for a consumer (e.g., Editor or Game executable):

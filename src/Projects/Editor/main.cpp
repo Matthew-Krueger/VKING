@@ -18,9 +18,25 @@
 
 #include <iostream>
 
+import VKING.Log;
+
+using Log = VKING::Log::Named<"Editor">;
+
 int main() {
 
+    VKING::Log::Init("LogFile.log");
+    VKING::Log::setLevel(VKING::Log::Level::debug);
+
+    Log::critical("Starting up");
+
+    Log::debug("Hello, World!");
+
+    Log::critical("Hello, World!");
+
     glm::vec3 f(1.0,2.0,1.0);
+
+
+    VKING::Log::Named<"Test">::info("Value: {}", 42);
 
     auto z = f * 3.0f;
 

@@ -49,6 +49,17 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+
+
+// Standard Library Stuff
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <source_location>
+#include <memory>
+#include <stdexcept>
+#include <iostream>
+
 //#include <glm/glm.hpp>
 //#include <EASTL/vector.h>
 //#include <EASTL/string.h>

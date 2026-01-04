@@ -3,8 +3,14 @@ cmake_minimum_required(VERSION 3.30)
 option(USE_HOMEBREW_LLVM "Use Homebrew LLVM on macOS for C++23 modules" ON)
 
 if(APPLE AND USE_HOMEBREW_LLVM)
-    set(CMAKE_CXX_COMPILER /opt/homebrew/opt/llvm/bin/clang++)
-    set(CMAKE_C_COMPILER /opt/homebrew/opt/llvm/bin/clang)
+    set(LLVM_PATH "/opt/homebrew/opt/llvm@20")  # Adjust if version changes
+
+    set(CMAKE_C_COMPILER "${LLVM_PATH}/bin/clang")
+    set(CMAKE_CXX_COMPILER "${LLVM_PATH}/bin/clang++")
+
+    add_compile_options("-stdlib=libc++")
+    add_link_options("-stdlib=libc++" "-L${LLVM_PATH}/lib")
+
     # Tell Clang where to find macOS system headers
     add_compile_options("-isysroot" "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
     add_link_options("-isysroot" "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
@@ -27,13 +33,13 @@ endif()
 ## Supported module Options
 set(GLFW_BUILD_STATIC ON)
 set(CMAKE_CXX_MODULE_STD OFF)
-set(BUILD_WITH_OPENMP ON)
 
 ## Add supported modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake_Modules")
-include(BuildWithOpenMP)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
+find_package(spdlog REQUIRED)
+
 find_package(Vulkan REQUIRED)
 if(Vulkan_FOUND)
     message(STATUS "Vulkan Found ${Vulkan_VERSION}")
