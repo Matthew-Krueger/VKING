@@ -187,7 +187,7 @@ export namespace VKING {
              * Returned by record() to allow chainable calls like:
              * Named<"Audio">::record().warn("Sound {} failed to load", name);
              */
-            struct LowWriter {
+            struct LogRecorder {
                 std::source_location loc;  ///< Captured source location
 
                 /// Log at trace level
@@ -231,7 +231,7 @@ export namespace VKING {
              * @brief Begin a log record with automatic source location capture.
              *
              * This is the primary entry point for logging in day-to-day use. It returns a temporary
-             * LowWriter object that provides fluent methods for each log level (trace, debug, info,
+             * LogRecorder object that provides fluent methods for each log level (trace, debug, info,
              * warn, error, critical).
              *
              * When used with the recommended module alias, logging becomes extremely concise:
@@ -252,10 +252,10 @@ export namespace VKING {
              * without any extra effort from the caller.
              *
              * @param loc Defaulted to current source location
-             * @return LowWriter instance for fluent logging
+             * @return LogRecorder instance for fluent logging
              */
             static constexpr auto record(const std::source_location& loc = std::source_location::current()) {
-                return LowWriter{loc};
+                return LogRecorder{loc};
             }
 
             /**
