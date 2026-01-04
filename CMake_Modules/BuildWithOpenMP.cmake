@@ -123,8 +123,9 @@ else()
             endif()
 
             # Flags for Clang (common on macOS); adjust if using GCC
-            set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${OMP_INCLUDE_DIR}")
-            set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${OMP_INCLUDE_DIR}")
+            # New - correct way
+            set(OpenMP_C_FLAGS   "-Xpreprocessor;-fopenmp")
+            set(OpenMP_CXX_FLAGS "-Xpreprocessor;-fopenmp")
 
             # Set variables for compatibility with CMake's OpenMP module
             set(OpenMP_C_FOUND TRUE)
