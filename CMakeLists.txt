@@ -35,9 +35,11 @@ set(GLFW_BUILD_STATIC ON)
 set(CMAKE_CXX_MODULE_STD OFF)
 option(VKING_ENABLE_VULKAN "Enable GLFW support" ON)
 option(VKING_ENABLE_GLFW "Enable GLFW support" ON)
+option(VKING_PEDANTIC_WARNINGS "Enable ultra-pedantic compiler warnings across VKING targets (may be noisy)" ON)
 
 ## Add supported modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake_Modules")
+include(VKING_Warnings)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(spdlog REQUIRED)
@@ -48,6 +50,7 @@ if(Vulkan_FOUND)
 else()
     message(FATAL_ERROR "Vulkan not found")
 endif()
+
 
 
 add_subdirectory(src)
