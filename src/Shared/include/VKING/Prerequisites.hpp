@@ -59,6 +59,7 @@
 #include <memory>
 #include <stdexcept>
 #include <iostream>
+#include <cstdint>
 
 //#include <glm/glm.hpp>
 //#include <EASTL/vector.h>
@@ -66,5 +67,8 @@
 //#include <spdlog/spdlog.h>
 //#include <spdlog/sinks/stdout_color_sinks.h>
 // etc
+
+// VKING specific handlers, like signals.hpp
+#include "Signals.hpp"
 
 #endif

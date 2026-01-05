@@ -19,18 +19,49 @@
 //
 // Created by Matthew Krueger on 1/3/26.
 //
+module;
+#include <chrono>
+
+
 export module VKING.Application;
 
 import VKING.Log;
 
 export namespace VKING {
     class Application {
-        public:
+    public:
         virtual ~Application() = default;
 
-        bool shouldRestart() { return false; }
-        void run() {}
+        /**
+         * @brief Main Event Loop
+         */
+        void run();
 
+    private:
     };
 
 } // VKING
+
+
+namespace VKING {
+
+    void Application::run() {
+
+        using clock = std::chrono::steady_clock;
+        auto previousTime = clock::now();
+        auto currentTime = previousTime;
+        float deltaTime = 0.0f;
+
+        while (!Shutdown::isRequested()) {
+
+            currentTime = clock::now();
+            deltaTime = std::chrono::duration<float, std::milli>(currentTime - previousTime).count();
+            previousTime = currentTime;
+
+            //VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
+
+        }
+
+    }
+
+}

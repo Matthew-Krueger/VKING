@@ -114,6 +114,12 @@ export namespace VKING {
         };
 
         /**
+         * @brief Gets the current logging level
+         * @return The current logging level
+         */
+        static Level getLevel() { return spdlog::get_level(); }
+
+        /**
          * @brief Compile-time named logger.
          *
          * Each instantiation with a unique name gets its own spdlog logger instance,
