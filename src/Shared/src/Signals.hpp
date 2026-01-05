@@ -48,14 +48,15 @@ namespace VKING::Shutdown {
 
     struct Info {
         Reason reason;
-        const char* message;
+        std::string message;
     };
 
     void request(Reason reason, const char* message = nullptr);
 
     bool isRequested();
     bool restartRequested();
-    const Info &getReason();
+
+    Info getReason();
     void clearRequest();
 
     inline const char * reasonToString(Reason reason) {

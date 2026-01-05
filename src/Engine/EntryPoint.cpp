@@ -94,7 +94,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
 
         // print why we shut down
         EntryPointLogger::record().info("Application shutdown reason: {}", VKING::Shutdown::reasonToString(shutdownInfo.reason));
-        if (shutdownInfo.reason != VKING::Shutdown::Reason::REASON_NONE && shutdownInfo.message != nullptr && shutdownInfo.message[0] != '\0') {
+        if (shutdownInfo.reason != VKING::Shutdown::Reason::REASON_NONE && !shutdownInfo.message.empty()) {
             EntryPointLogger::record().info("Shutdown message: {}", shutdownInfo.message);
         }
 

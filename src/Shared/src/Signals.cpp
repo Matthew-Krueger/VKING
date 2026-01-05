@@ -33,7 +33,6 @@
 
 extern "C"{
 #include <signal.h>
-#include <stdio.h>
 #include <unistd.h>
 }
 #endif
@@ -41,7 +40,7 @@ extern "C"{
 namespace VKING::Shutdown {
     static constexpr size_t MAX_MESSAGE_LENGTH = 100;
     static char s_MessageBuf[MAX_MESSAGE_LENGTH]{};
-    static Info s_Info{Reason::REASON_NONE, s_MessageBuf};
+    static std::atomic<Reason> s_RequestReason = Reason::REASON_NONE;
     static std::atomic_bool s_ShutdownRequested{false};
 }
 
@@ -54,15 +53,15 @@ extern "C" {
         switch (signal) {
             case SIGINT:
                 // "[SIGINT] Interrupt subscribed and received."
-                request(VKING::Shutdown::Reason::REASON_SIGINT, nullptr);
+                request(VKING::Shutdown::Reason::REASON_SIGINT, "[SIGINT] Signal Interrupt received and interrupt handled.");
                 break;
             case SIGTERM:
                 // "[SIGTERM] Interrupt was subscribed and received."
-                request(VKING::Shutdown::Reason::REASON_SIGTERM, nullptr);
+                request(VKING::Shutdown::Reason::REASON_SIGTERM, "[SIGTERM] Signal Interrupt received and interrupt handled.");
                 break;
             default:
                 // "[SIG Unknown] Interrupt was subscribed and received, but no handler."
-                request(VKING::Shutdown::Reason::REASON_UNKNOWN, nullptr);
+                request(VKING::Shutdown::Reason::REASON_UNKNOWN, "[UNKNOWN] Signal Interrupt received but no handler was known.");
                 break;
         }
     }
@@ -70,17 +69,23 @@ extern "C" {
 
 namespace VKING::Shutdown {
     void request(Reason reason, const char* message) {
-        // safely memcpy the message into our buffer, checking strlen first
+
         if (message) {
-            size_t messageLength = strnlen(message, MAX_MESSAGE_LENGTH - 1);
-            memcpy(s_MessageBuf, message, messageLength);
-            s_MessageBuf[messageLength] = '\0';
+            // safely copy byte for byte our message into the buffer
+            // memcpy must NOT be used as it is not strictly async safe
+            // the message may still be corrupted if multiple interrupts happen, but at that point, meh
+            for (uint32_t i = 0; i < MAX_MESSAGE_LENGTH - 1; i++) {
+                const char c = message[i];
+                s_MessageBuf[i] = c;
+                if (c == '\0') break;
+            }
+            s_MessageBuf[MAX_MESSAGE_LENGTH - 1] = '\0';  // ensure null-termination
         } else {
             s_MessageBuf[0] = '\0';
         }
 
         // copy the reason
-        s_Info.reason = reason;
+        s_RequestReason.store(reason, std::memory_order_release);
 
         // and raise the flag
         // if multiple requests are raised, the last one in is fine
@@ -94,19 +99,29 @@ namespace VKING::Shutdown {
 
     bool restartRequested() {
         if (!isRequested()) return false;
-        if (s_Info.reason == Reason::REASON_USER_RESTART) return true;
-        if (s_Info.reason == Reason::REASON_INVOLUNTARY_RESTART) return true;
+        const Reason reason = s_RequestReason.load(std::memory_order_acquire);
+        if ( reason == Reason::REASON_USER_RESTART) return true;
+        if ( reason == Reason::REASON_INVOLUNTARY_RESTART) return true;
         return false;
     }
 
-    const Info &getReason() {
-        return s_Info;
+    Info getReason() {
+
+        // construct a string so the lifetime is separate and remains separable in the thread
+        // and cap the length to MAX_MESSAGE_LENGTH, just in case the message was not properly terminated
+        auto msg = std::string(s_MessageBuf, std::min(strlen(s_MessageBuf), MAX_MESSAGE_LENGTH));
+        const Reason reason = s_RequestReason.load(std::memory_order_acquire);
+
+        return {
+            reason, std::move(msg)
+        };
+
     }
 
     void clearRequest() {
         s_ShutdownRequested.store(false, std::memory_order_release);
-        s_Info.reason = Reason::REASON_NONE;
-        s_MessageBuf[0] = '\0';
+        s_RequestReason.store(Reason::REASON_NONE, std::memory_order_release);
+        memset(s_MessageBuf, '\0', MAX_MESSAGE_LENGTH);
     }
 
 
@@ -131,14 +146,14 @@ namespace VKING::Shutdown {
         if (sigaction(SIGINT, &sa, nullptr) == -1) {
             // Log error in an async-signal-safe way if this function were called from a signal handler
             // For startup, std::cerr is generally acceptable, but write() is safer.
-            // Using a simple write here for consistency in messaging philosophy.
-            const char* msg = "VKING::Shutdown ERROR: Could not register SIGINT handler.\n";
+            // Using spmple writing here for consistency in messaging philosophy.
+            const auto msg = "VKING::Shutdown ERROR: Could not register SIGINT handler.\n";
             write(STDERR_FILENO, msg, strlen(msg));
         }
 
         // Register handler for SIGTERM
         if (sigaction(SIGTERM, &sa, nullptr) == -1) {
-            const char* msg = "VKING::Shutdown ERROR: Could not register SIGTERM handler.\n";
+            const auto msg = "VKING::Shutdown ERROR: Could not register SIGTERM handler.\n";
             write(STDERR_FILENO, msg, strlen(msg));
         }
 

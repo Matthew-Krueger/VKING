@@ -21,6 +21,7 @@
 //
 module;
 #include <chrono>
+#include <thread>
 
 
 export module VKING.Application;
@@ -58,7 +59,9 @@ namespace VKING {
             deltaTime = std::chrono::duration<float, std::milli>(currentTime - previousTime).count();
             previousTime = currentTime;
 
-            VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
+            // just while we don't have a real event loop or load, lets prevent the thread from infinitely sinning
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            //VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
 
         }
 
