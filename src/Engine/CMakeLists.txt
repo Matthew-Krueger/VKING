@@ -37,6 +37,7 @@ target_include_directories(VKING_Engine
         # $<INSTALL_INTERFACE:include>  # Uncomment if you ever install the engine
 )
 
+vking_apply_warnings(VKING_Engine)
 
 
 add_library(VKING::Engine ALIAS VKING_Engine)

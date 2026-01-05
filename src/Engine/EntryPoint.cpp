@@ -27,10 +27,10 @@
 import VKING.Application;
 import VKING.Log;
 
-static constexpr VKING::Log::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKING::Log::Level::info;
+static constexpr VKING::Log::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKING::Log::Level::trace;
 
 /* Actual Main function */
-int VKING_Main(int argc, char ** argv){
+int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
 
     VKING::registerLogger();
 

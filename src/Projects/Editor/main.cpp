@@ -28,12 +28,16 @@
 import VKING.Editor.Application;
 import VKING.Log;
 
+using EditorMainLogger = VKING::Log::Named<"EditorMain">;
+
 void VKING::registerLogger() {
     Log::Init("VKING-Editor.log");
-    Log::setLevel(Log::Level::debug);
+    Log::setLevel(Log::Level::trace);
+    EditorMainLogger::record().info("Logger Registered.");
 }
 
 
 void* VKING::createApplication() {
+    EditorMainLogger::record().info("Creating application.");
     return new Editor::EditorApplication();
 }

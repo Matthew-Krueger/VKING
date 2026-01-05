@@ -54,7 +54,7 @@ namespace VKING {
      */
     extern void registerLogger();
 }
-extern int VKING_Main(int argc, char ** argv);
+extern int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv);
 
 #ifdef VKING_INCLUDE_WIN_MAIN
 #   ifdef WIN32
@@ -121,7 +121,7 @@ extern int VKING_Main(int argc, char ** argv);
 #ifdef VKING_INCLUDE_POSIX_MAIN
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile
 int main(int argc, char ** argv) {
-    return VKING_Main(argc, argv);
+    return VKING_Main(argc, const_cast<const char**>(argv));
 }
 #endif
 

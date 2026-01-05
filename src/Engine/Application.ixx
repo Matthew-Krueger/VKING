@@ -58,7 +58,7 @@ namespace VKING {
             deltaTime = std::chrono::duration<float, std::milli>(currentTime - previousTime).count();
             previousTime = currentTime;
 
-            //VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
+            VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
 
         }
 

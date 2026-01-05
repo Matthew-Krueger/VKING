@@ -27,6 +27,17 @@
 #include "../../../cmake-build-relwithdebinfo/_deps/spdlog-src/include/spdlog/fmt/bundled/chrono.h"
 
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+
+extern "C"{
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
+}
+#endif
+
 namespace VKING::Shutdown {
     static constexpr size_t MAX_MESSAGE_LENGTH = 100;
     static char s_MessageBuf[MAX_MESSAGE_LENGTH]{};
@@ -58,7 +69,6 @@ extern "C" {
 }
 
 namespace VKING::Shutdown {
-
     void request(Reason reason, const char* message) {
         // safely memcpy the message into our buffer, checking strlen first
         if (message) {
@@ -99,9 +109,41 @@ namespace VKING::Shutdown {
         s_MessageBuf[0] = '\0';
     }
 
+
+#ifdef _WIN32
     void registerInterruptHandler() {
+#pragma message("VKING::Shutdown: Windows console control handlers are not fully implemented. " \
+"Application might not quit gracefully via all console commands (e.g., closing console window).")
         signal(SIGINT, interruptHandler);
         signal(SIGTERM, interruptHandler);
     }
+#else// we are assuming a posix system
+
+    void registerInterruptHandler() {
+        struct sigaction sa{};
+        sa.sa_handler = interruptHandler; // Your existing C-linkage handler
+        sigemptyset(&sa.sa_mask);         // Clear the mask of signals to block
+        sigaddset(&sa.sa_mask, SIGINT);
+        sigaddset(&sa.sa_mask, SIGTERM);
+        sa.sa_flags = SA_RESTART;         // Restart interrupted system calls (e.g., read, write)
+
+        // Register handler for SIGINT (Ctrl+C)
+        if (sigaction(SIGINT, &sa, nullptr) == -1) {
+            // Log error in an async-signal-safe way if this function were called from a signal handler
+            // For startup, std::cerr is generally acceptable, but write() is safer.
+            // Using a simple write here for consistency in messaging philosophy.
+            const char* msg = "VKING::Shutdown ERROR: Could not register SIGINT handler.\n";
+            write(STDERR_FILENO, msg, strlen(msg));
+        }
+
+        // Register handler for SIGTERM
+        if (sigaction(SIGTERM, &sa, nullptr) == -1) {
+            const char* msg = "VKING::Shutdown ERROR: Could not register SIGTERM handler.\n";
+            write(STDERR_FILENO, msg, strlen(msg));
+        }
+
+    }
+#endif
+
 
 }

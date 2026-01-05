@@ -99,3 +99,6 @@ target_link_libraries(VKING_Platform_Glue_GLFWVulkan
 # # Optional: Reuse the engine's PCH for faster builds
 # target_precompile_headers(VKING_Editor REUSE_FROM VKING::SharedResources)
 # ==============================================================================
+
+# apply warnings
+vking_apply_warnings(VKING_Platform_Glue_GLFWVulkan)
