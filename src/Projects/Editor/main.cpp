@@ -1,5 +1,5 @@
 /*
- *         A high-performance, module-first game engine.
+ *         VKING: A high-performance, module-first game engine.
  *         Copyright (C) 2026 Matthew Krueger
  *
  *         This program is free software: you can redistribute it and/or modify
@@ -16,38 +16,24 @@
  *         along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+//
+// Created by Matthew Krueger on 1/4/26.
+//
 
+#define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
+#define VKING_INCLUDE_POSIX_MAIN
+#define VKING_INCLUDE_WIN_MAIN
+#include <VKING/MainCreator.hpp>
+
+import VKING.Editor.Application;
 import VKING.Log;
 
-using Log = VKING::Log::Named<"Editor">;
-
-int main() {
-
-    VKING::Log::Init("LogFile.log");
-    VKING::Log::setLevel(VKING::Log::Level::debug);
-
-    Log::record().critical("Starting up");
-
-    Log::record().debug("Hello, World!");
-
-    Log::record().critical("Hello, World!");
-
-    glm::vec3 f(1.0,2.0,1.0);
-
-    Log::record().critical("Hello, World! Your name is {}", "Matthew");
+void VKING::registerLogger() {
+    Log::Init("VKING-Editor.log");
+    Log::setLevel(Log::Level::debug);
+}
 
 
-    VKING::Log::Named<"Test">::record().info("Value: {}", 42);
-
-    auto z = f * 3.0f;
-
-    std::cout << z.x << " " << z.y << " " << z.z << std::endl;
-
-    glm::vec3 a  =  z.xyy;
-
-    std::cout << a.x << " " << a.y << " " << a.z << std::endl;
-
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+void* VKING::createApplication() {
+    return new Editor::EditorApplication();
 }

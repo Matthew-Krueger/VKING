@@ -19,8 +19,18 @@
 //
 // Created by Matthew Krueger on 1/3/26.
 //
+export module VKING.Application;
 
-#include "Application.hpp"
+import VKING.Log;
 
-namespace VKING {
+export namespace VKING {
+    class Application {
+        public:
+        virtual ~Application() = default;
+
+        bool shouldRestart() { return false; }
+        void run() {}
+
+    };
+
 } // VKING

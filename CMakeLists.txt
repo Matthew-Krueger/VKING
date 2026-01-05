@@ -8,8 +8,8 @@ if(APPLE AND USE_HOMEBREW_LLVM)
     set(CMAKE_C_COMPILER "${LLVM_PATH}/bin/clang")
     set(CMAKE_CXX_COMPILER "${LLVM_PATH}/bin/clang++")
 
-    add_compile_options("-stdlib=libc++")
-    add_link_options("-stdlib=libc++" "-L${LLVM_PATH}/lib")
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>")
+    add_link_options("$<$<LINK_LANGUAGE:CXX>:-stdlib=libc++>" "-L${LLVM_PATH}/lib")
 
     # Tell Clang where to find macOS system headers
     add_compile_options("-isysroot" "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
