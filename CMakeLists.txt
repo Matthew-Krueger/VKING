@@ -33,6 +33,8 @@ endif()
 ## Supported module Options
 set(GLFW_BUILD_STATIC ON)
 set(CMAKE_CXX_MODULE_STD OFF)
+option(VKING_ENABLE_VULKAN "Enable GLFW support" ON)
+option(VKING_ENABLE_GLFW "Enable GLFW support" ON)
 
 ## Add supported modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake_Modules")
@@ -46,5 +48,6 @@ if(Vulkan_FOUND)
 else()
     message(FATAL_ERROR "Vulkan not found")
 endif()
+
 
 add_subdirectory(src)

@@ -9,13 +9,13 @@
 #   • Access to common types/macros via #include <VKING/Prerequisites.hpp>
 # ==============================================================================
 
-add_library(VKING_Engine_Shared_Resources OBJECT
-    src/GLMDebug.cpp
+add_library(VKING_Platform_GLFW STATIC
+        dummy.cpp
 )
 
 
 # Nice namespaced alias for use throughout the project
-add_library(VKING::Engine::SharedResources ALIAS VKING_Engine_Shared_Resources)
+add_library(VKING::Platform::GLFW ALIAS VKING_Platform_GLFW)
 
 # -----------------------------------------------------------------------------
 # Public C++23 modules
@@ -24,20 +24,18 @@ add_library(VKING::Engine::SharedResources ALIAS VKING_Engine_Shared_Resources)
 #     import VKING.Engine.Math;
 # in their own translation units.
 # -----------------------------------------------------------------------------
-target_sources(VKING_Engine_Shared_Resources
+target_sources(VKING_Platform_GLFW
         PUBLIC
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
-        src/VKING/Log.ixx
+        #Platform.Glue.GLFWVulkan.ixx
 )
 
 # -----------------------------------------------------------------------------
 # Regular sources (implementation files, private headers, etc.)
 # -----------------------------------------------------------------------------
-# Any .cpp files that implement module partitions or internal helpers go here.
-# Prerequisites.hpp is listed here only so it's visible to CMake for PCH purposes.
 # -----------------------------------------------------------------------------
-target_sources(VKING_Engine_Shared_Resources
+target_sources(VKING_Platform_GLFW
         PRIVATE
         # include/VKING/Prerequisites.hpp  # Intentionally NOT listed as source
         # → It's a header-only PCH, not compiled directly into the object lib
@@ -51,7 +49,7 @@ target_sources(VKING_Engine_Shared_Resources
 # and any other public headers you add later.
 # Use generator expressions so this only applies during build, not install.
 # -----------------------------------------------------------------------------
-target_include_directories(VKING_Engine_Shared_Resources
+target_include_directories(VKING_Platform_GLFW
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         # $<INSTALL_INTERFACE:include>  # Uncomment if you ever install the engine
@@ -62,29 +60,29 @@ target_include_directories(VKING_Engine_Shared_Resources
 # -----------------------------------------------------------------------------
 # We declare Prerequisites.hpp as a PCH header on this target.
 # Consumers can choose to use it via:
-#     target_precompile_headers(VKING::Engine::SharedResources REUSE_FROM VKING::Engine::SharedResources)
+#     target_precompile_headers(VKING::SharedResources REUSE_FROM VKING::SharedResources)
 # This reuses our precompiled version without forcing it.
 # If a consumer has their own PCH, they can simply ignore this.
 # -----------------------------------------------------------------------------
-target_precompile_headers(VKING_Engine_Shared_Resources
-        PRIVATE
-        include/VKING/Prerequisites.hpp
+target_precompile_headers(VKING_Platform_GLFW
+        REUSE_FROM
+        VKING::SharedResources
 )
 
 # -----------------------------------------------------------------------------
 # Compile features and dependencies
 # -----------------------------------------------------------------------------
-target_compile_features(VKING_Engine_Shared_Resources
+target_compile_features(VKING_Platform_GLFW
         PUBLIC
         cxx_std_23  # Consumers inherit C++23 requirement
 )
 
-target_link_libraries(VKING_Engine_Shared_Resources
+target_link_libraries(VKING_Platform_GLFW
         PRIVATE
         # Internal dependency – not propagated to consumers
+        glfw
         PUBLIC
-        glm::glm
-        spdlog::spdlog
+        VKING::SharedResources
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )
@@ -93,8 +91,8 @@ target_link_libraries(VKING_Engine_Shared_Resources
 # Usage example for a consumer (e.g., Editor or Game executable):
 # ==============================================================================
 # add_executable(VKING_Editor ...)
-# target_link_libraries(VKING_Editor PRIVATE VKING::Engine::SharedResources)
+# target_link_libraries(VKING_Editor PRIVATE VKING::SharedResources)
 #
 # # Optional: Reuse the engine's PCH for faster builds
-# target_precompile_headers(VKING_Editor REUSE_FROM VKING::Engine::SharedResources)
+# target_precompile_headers(VKING_Editor REUSE_FROM VKING::SharedResources)
 # ==============================================================================

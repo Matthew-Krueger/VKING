@@ -1,6 +1,4 @@
-add_subdirectory(platform)
-
-add_library(VKING_Engine OBJECT
+add_library(VKING_Engine STATIC
         Application.cpp
         Application.hpp
 
@@ -8,14 +6,14 @@ add_library(VKING_Engine OBJECT
 
 target_link_libraries(
         VKING_Engine
-        PUBLIC
-        VKING::Engine::SharedResources
+        PRIVATE VKING::Platform::AvailableTargets
+        PUBLIC VKING::SharedResources
 )
 
 target_precompile_headers(
         VKING_Engine
         REUSE_FROM
-        VKING::Engine::SharedResources
+        VKING::SharedResources
 )
 
 
