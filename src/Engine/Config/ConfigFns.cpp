@@ -73,7 +73,7 @@ namespace VKING::EngineConfig {
                         .platformType = Types::Platform::PlatformType::GLFW,
                         .backendType = Types::Platform::BackendType::VULKAN
                     },
-                    .score = static_cast<uint16_t>(getPlatformScore(supportedPlatforms(), Types::Platform::PlatformType::GLFW) * getBackendScore(supportedBackends(), Types::Platform::BackendType::VULKAN))
+                    .score = static_cast<uint16_t>(getPlatformScore(getPlatformScores(), Types::Platform::PlatformType::GLFW) * getBackendScore(getBackendScores(), Types::Platform::BackendType::VULKAN))
                 });
 #endif
             // Add more as implemented...

@@ -46,19 +46,62 @@ namespace VKING::Shutdown {
         REASON_NONE
     };
 
+    /**
+     * @brief Class representing info on why a shutdown was requested
+     *
+     * @note The string is returned as a copy, so the caller is responsible for managing its lifetime. Calling reset will not invalidate the string.
+     */
     struct Info {
         Reason reason;
         std::string message;
     };
 
+    /**
+     * @brief Requests a shutdown at the next safe shutdown time.
+     *
+     * @note This function is async-singal-safe.
+     *
+     * @param reason The reason the caller is requesting the shutdown
+     * @param message The message the caller would like to go along with the shutdown, if any. You may pass nullptr
+     */
     void request(Reason reason, const char* message = nullptr);
 
+    /**
+     * @brief Tests if a shutdown is requested
+     * @return Whether or not a shutdown is requested
+     */
     bool isRequested();
+
+    /**
+     * @brief Tests if a restart is requested
+     * @return Whether or not a restart is requested
+     */
     bool restartRequested();
 
+    /**
+     * @brief Gets the reason for the shutdown
+     *
+     * @note Lifetime of all objects are transferred. Please remember to call clearRequest(); it is not cleared automatically
+     *
+     * @return The reason for the shutdown
+     */
     Info getReason();
+
+    /**
+     * @brief Clears the stored request
+     */
     void clearRequest();
 
+    /**
+     * @brief Converts a Reason enum value to its corresponding string representation.
+     *
+     * This function maps each Reason enum value to a human-readable string describing
+     * the reason for a shutdown or restart event.
+     *
+     * @param reason The Reason enum value to be converted to a string.
+     * @return A constant character pointer to the string representation of the given reason.
+     *         If the reason is not recognized, "Unknown" will be returned.
+     */
     inline const char * reasonToString(Reason reason) {
         switch (reason) {
             case Reason::REASON_USER_REQUEST: return "User Requested";
@@ -75,5 +118,10 @@ namespace VKING::Shutdown {
         }
     }
 
+    /**
+     * @brief Registers a signal handler to handle certain signals and other events
+     *
+     * This does not override the native window's handling of events, and is only intended to capture terminal events.
+     */
     void registerInterruptHandler();
 }

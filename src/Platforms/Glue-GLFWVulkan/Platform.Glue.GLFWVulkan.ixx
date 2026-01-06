@@ -29,6 +29,14 @@ using PlatformGLFWVulkanLogger = VKING::Log::Named<"PlatformCreator">;
 
 namespace VKING::Platform::Glue {
     class GLFWVulkan final : public Types::Platform::PlatformManager {
+        /**
+         * Constructs an instance of GLFWVulkan, a specialized platform manager for the Vulkan backend using GLFW.
+         *
+         * @param pfn_CreateFunctionArchive A function pointer used to create the platform-specific function archive.
+         *                                   This is passed to the base PlatformManager constructor as part of the
+         *                                   platform creation info.
+         * @return A fully initialized instance of GLFWVulkan.
+         */
     public:
         explicit GLFWVulkan(const Types::Platform::CreateFn pfn_CreateFunctionArchive) : PlatformManager(Types::Platform::BackendType::VULKAN, Types::Platform::PlatformType::GLFW, PlatformSpecification::PlatformCreateInfo{pfn_CreateFunctionArchive}){};
 
