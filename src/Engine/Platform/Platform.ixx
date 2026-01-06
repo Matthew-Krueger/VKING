@@ -29,7 +29,7 @@ export namespace VKING::Platform {
     class RHI;
     class PlatformManager;
 
-    using CreateFn = std::unique_ptr<PlatformManager> (*)();
+    using CreateFn = PlatformManager* (*)();
 
     enum class BackendType {
         VULKAN,
@@ -51,151 +51,67 @@ export namespace VKING::Platform {
         PLATFORM_NO_PREFERENCE
     };
 
+    std::string backendToString(BackendType backend) {
+        switch (backend) {
+            case BackendType::VULKAN: return "Vulkan";
+            case BackendType::METAL: return "Metal";
+            case BackendType::GNM: return "PlayStation";
+            case BackendType::OPENGL: return "OpenGL";
+            case BackendType::DIRECTX_12: return "DirectX 12";
+            case BackendType::BACKEND_UNSUPPORTED: return "Unsupported";
+            case BackendType::BACKEND_NO_PREFERENCE: return "No Preference stated";
+            default: return "Unsupported";
+        }
+    }
+
+    std::string platformToString(PlatformType platform) {
+        switch (platform) {
+            case PlatformType::GLFW: return "GLFW";
+            case PlatformType::WAYLAND: return "Wayland";
+            case PlatformType::X11: return "X11";
+            case PlatformType::COCOA: return "Cocoa";
+            case PlatformType::WIN32: return "Win32";
+            case PlatformType::PLATFORM_UNSUPPORTED: return "Unsupported";
+            case PlatformType::PLATFORM_NO_PREFERENCE: return "No Preference stated";
+            default: return "Unsupported";
+        }
+    }
+
     class PlatformManager {
     public:
         struct PlatformSpecification {
-            std::optional<std::unique_ptr<PlatformManager>> platform = std::nullopt;
-            std::optional<CreateFn> backendCreateFN = std::nullopt;
+            struct PlatformCreateInfo {
+                CreateFn pfn_PlatformManagerCreate = nullptr;
+            };
+
+            //std::unique_ptr<PlatformManager>
+            std::optional<PlatformCreateInfo> platformCreateInfo = std::nullopt;
             PlatformType platformType = PlatformType::PLATFORM_NO_PREFERENCE;
             BackendType backendType = BackendType::BACKEND_NO_PREFERENCE;
         };
 
         virtual ~PlatformManager() = default;
 
-        static PlatformSpecification select(PlatformSpecification desiredSpecification);
+        //static PlatformSpecification select(PlatformSpecification desiredSpecification);
 
         virtual std::unique_ptr<Window> createWindow() = 0;
         virtual std::unique_ptr<RHI> createRHI() = 0;
 
 
+    protected:
+        PlatformManager(
+            BackendType backendType,
+            PlatformType platformType,
+            PlatformSpecification::PlatformCreateInfo platformCreateInfo)
+        : m_PlatformBackendType(backendType),
+          m_PlatformType(platformType),
+          m_PlatformCreateInfo(platformCreateInfo){};
+
     private:
-        PlatformManager();
+        BackendType m_PlatformBackendType = BackendType::BACKEND_UNSUPPORTED;
+        PlatformType m_PlatformType = PlatformType::PLATFORM_UNSUPPORTED;
+        PlatformSpecification::PlatformCreateInfo m_PlatformCreateInfo{};
+
     };
-}
-
-#if (VKING_HAS_GLFW == 1)
-// import VKING.Platform.GLFW;
-#endif
-
-#if (VKING_HAS_VULKAN == 1)
-// import VKING.Platform.Vulkan;
-#endif
-
-#if (VKING_HAS_GLFW_VULKAN_GLUE == 1)
-// import VKING.Platform.Glue.GLFWVulkan;
-#endif
-
-#if (VKING_HAS_AT_LEAST_ONE_PLATFORM == 0)
-#error "VKING Engine cannot be built: At least one platform (e.g., GLFW) must be enabled."
-#endif
-
-#if (VKING_HAS_AT_LEAST_ONE_BACKEND == 0)
-#error "VKING Engine cannot be built: At least one backend (e.g., Vulkan) must be enabled."
-#endif
-
-#if (VKING_HAS_AT_LEAST_ONE_PLATFORM_BACKEND_GLUE == 0)
-#error "VKING Engine cannot be built: At least one platform-backend glue (e.g., GLFW+Vulkan) must be enabled."
-#endif
-
-namespace VKING::Platform {
-
-
-    consteval auto supportedPlatforms() {
-        std::vector<ScoredType<Platform::PlatformType>> platforms;
-
-        if constexpr (VKING_HAS_GLFW == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::GLFW,    .score = 2 });  // cross-platform, less native
-        }
-        if constexpr (VKING_HAS_WAYLAND == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::WAYLAND, .score = 1 });  // native Linux
-        }
-        if constexpr (VKING_HAS_X11 == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::X11,     .score = 1 });  // native Linux
-        }
-        if constexpr (VKING_HAS_COCOA == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::COCOA,   .score = 1 });  // native macOS
-        }
-        if constexpr (VKING_HAS_WIN32 == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::WIN32,   .score = 1 });  // native Windows
-        }
-
-        return platforms;
-    }
-
-    consteval auto supportedBackends() {
-        std::vector<ScoredType<Platform::BackendType>> backends;
-
-        if constexpr (VKING_HAS_VULKAN == 1) {
-            backends.push_back({ .value = Platform::BackendType::VULKAN,       .score = 2 });  // powerful but complex and less native
-        }
-        if constexpr (VKING_HAS_METAL == 1) {
-            backends.push_back({ .value = Platform::BackendType::METAL,        .score = 1 });  // native Apple
-        }
-        if constexpr (VKING_HAS_DIRECTX_12 == 1) {
-            backends.push_back({ .value = Platform::BackendType::DIRECTX_12,   .score = 1 });  // native Windows
-        }
-        if constexpr (VKING_HAS_OPENGL == 1) {
-            backends.push_back({ .value = Platform::BackendType::OPENGL,       .score = 3 });  // legacy, avoid if possible
-        }
-        if constexpr (VKING_HAS_GNM == 1) {
-            backends.push_back({ .value = Platform::BackendType::GNM,          .score = 1 });  // native PlayStation
-        }
-
-        return backends;
-    }
-
-    consteval uint16_t getPlatformScore(const std::vector<ScoredType<PlatformType, uint16_t>> &platforms, const PlatformType desiredPlatform) {
-
-        auto score = std::numeric_limits<uint16_t>::max();
-        uint32_t candidates = 0;
-        for (size_t i = 0; i < platforms.size(); i++) {
-            if (platforms[i].value == desiredPlatform) {
-                score = platforms[i].score;
-                candidates++;
-            }
-        }
-        // if it is not found, return the max score
-        if (candidates == 1) return score;
-        return std::numeric_limits<uint16_t>::max(); // there is a duplicate somehow or the candidate does not exist this effectively removes it from consideration
-
-    }
-
-    consteval uint16_t getBackendScore(const std::vector<ScoredType<BackendType, uint16_t>> &backends, const BackendType desiredBackend) {
-
-        auto score = std::numeric_limits<uint16_t>::max();
-        uint32_t candidates = 0;
-        for (size_t i = 0; i < backends.size(); i++) {
-            if (backends[i].value == desiredBackend) {
-                score = backends[i].score;
-                candidates++;
-            }
-        }
-        // if it is not found, return the max score
-        if (candidates == 1) return score;
-        return std::numeric_limits<uint16_t>::max(); // there is a duplicate somehow or the candidate does not exist this effectively removes it from consideration
-
-    }
-
-    // === Full config table with precomputed scores and factory ===
-    consteval auto getConfigTable() {
-        std::vector<ScoredType<PlatformManager::PlatformSpecification> > table;
-
-#if VKING_HAS_GLFW_VULKAN_GLUE == 1
-        table.push_back(
-            {
-                .value = {
-                    .platform = std::nullopt,
-                    .backendCreateFN = std::nullopt,
-                    .platformType = PlatformType::GLFW,
-                    .backendType = BackendType::VULKAN
-                },
-                .score = static_cast<uint16_t>(getPlatformScore(supportedPlatforms(), PlatformType::GLFW) * getBackendScore(supportedBackends(), BackendType::VULKAN))
-            });
-#endif
-        // Add more as implemented...
-
-        return table;
-    }
-
 
 }

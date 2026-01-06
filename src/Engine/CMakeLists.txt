@@ -2,7 +2,7 @@ add_library(VKING_Engine STATIC
         Application.ixx
         include/VKING/MainCreator.hpp
         EntryPoint.cpp
-
+        Config/ConfigFns.cpp
 )
 
 # -----------------------------------------------------------------------------
@@ -21,6 +21,7 @@ target_sources(VKING_Engine
         RHI/RHI.ixx
         Platform/Platform.ixx
         EntryPointCallbacks.ixx
+        Config/ConfigConstants.ixx
 )
 
 target_link_libraries(
