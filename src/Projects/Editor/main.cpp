@@ -20,6 +20,8 @@
 // Created by Matthew Krueger on 1/4/26.
 //
 
+module;
+
 #define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
 #define VKING_INCLUDE_POSIX_MAIN
 #define VKING_INCLUDE_WIN_MAIN
@@ -27,6 +29,8 @@
 
 import VKING.Editor.Application;
 import VKING.Log;
+
+module VKING.EntryPointCallbacks;
 
 using EditorMainLogger = VKING::Log::Named<"EditorMain">;
 
@@ -37,7 +41,8 @@ void VKING::registerLogger() {
 }
 
 
-void* VKING::createApplication() {
+std::unique_ptr<VKING::Application> VKING::createApplication() {
     EditorMainLogger::record().info("Creating application.");
-    return new Editor::EditorApplication();
+    return std::make_unique<Editor::EditorApplication>();
 }
+

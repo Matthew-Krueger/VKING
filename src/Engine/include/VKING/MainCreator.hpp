@@ -24,36 +24,6 @@
 
 #include <VKING/Prerequisites.hpp>
 
-namespace VKING {
-    /**
-     * @brief Returns a void pointer to a VKING::Application*
-     *
-     * You create this via defining void* VKING::createApplication() in YOUR app.
-     * It is invoked by VKING_Main as a callback to register your application.
-     *
-     * @note You MUST return void*, as module ownership plays poorly with doing callbacks like this. No real way around it
-     *
-     * @return A void pointer to a VKING::Application*
-     */
-    extern void* createApplication();
-
-    /**
-     * @brief Register your logger
-     *
-     * You create this via defining void* VKING::registerLogger() in YOUR app.
-     * It is invoked by VKING_Main as a callback to register the logger before anything else happens (so you can get log files)
-     *
-     * The engine will respect your log levels you set and will not change them, you control them,
-     * EXCEPT during explicit lifecycle events, where it is controlled by the engine and put back afterwords.
-     * Basically, whenever you are in the driver's seat, you control the level and the engine will make no attempt
-     * to change it. When the engine is in the driver's seat (and not doing any behavior *you* can change
-     * like startup/shutdown, interrupts, etc), the engine controls the level.
-     *
-     * @note You MUST return void*, as module ownership plays poorly with doing callbacks like this. No real way around it
-     *
-     */
-    extern void registerLogger();
-}
 extern int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv);
 
 #ifdef VKING_INCLUDE_WIN_MAIN

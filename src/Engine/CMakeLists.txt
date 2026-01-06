@@ -20,6 +20,7 @@ target_sources(VKING_Engine
         Window/Window.ixx
         RHI/RHI.ixx
         Platform/Platform.ixx
+        EntryPointCallbacks.ixx
 )
 
 target_link_libraries(

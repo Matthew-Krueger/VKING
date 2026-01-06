@@ -26,6 +26,7 @@
 
 import VKING.Application;
 import VKING.Log;
+import VKING.EntryPointCallbacks;
 
 static constexpr VKING::Log::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKING::Log::Level::trace;
 
@@ -74,7 +75,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
         // start the application respecting consumer's log level
         EntryPointLogger::record().info("Starting new application, calling VKING::createApplication(), respecting consumer log level");
         VKING::Log::setLevel(previousLevel);
-        auto* application = static_cast<VKING::Application*>(VKING::createApplication());
+        auto application = VKING::createApplication();
 
         // run the event loop
         EntryPointLogger::record().info("Application created. Calling application->run()");
@@ -103,7 +104,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
         EntryPointLogger::record().info("Deleting application.");
         // once more with the log level dance
         VKING::Log::setLevel(previousLevel);
-        delete application;
+        application.reset(); // to control the lifetime and invalidate this pointer.
 
         previousLevel = VKING::Log::getLevel();
         VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
