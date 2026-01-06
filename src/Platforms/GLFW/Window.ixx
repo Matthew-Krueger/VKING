@@ -54,14 +54,12 @@ namespace VKING::Platform::GLFW {
         explicit Window(const WindowCreateInfo& createInfo);
         ~Window() override;
 
-        void setWindowCloseRequestCallbackEventFN(WindowCloseRequestCallbackEventFN callback) override {};
         void* getNativeWindowHandle() override { return m_GLFWwindow; }
 
         void pollEvents() override;
 
     private:
         GLFWwindow* m_GLFWwindow = nullptr;
-        Types::Window::WindowCloseRequestCallbackEventFN m_WindowCloseRequestCallbackEventFN = nullptr; // don't *need* to store it here but good to do
         std::string m_Title;
         int m_Width = 0, m_Height = 0;
         bool m_Visible = false;

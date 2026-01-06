@@ -56,6 +56,10 @@ namespace VKING {
 
         m_PlatformManager = VKING::EngineConfig::selectPlatform({.platformType = Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE, .backendType = Types::Platform::BackendType::VULKAN});
         m_Window = m_PlatformManager->createWindow({"VKING Window", 1280, 720});
+        m_Window->setWindowCloseRequestCallbackEventFN([]([[maybe_unused]] Types::Window* window) {
+            VKING::Shutdown::request(Shutdown::Reason::REASON_USER_REQUEST, "Window Close Request Received.");
+            return true;
+        });
     }
 
     void Application::run() {

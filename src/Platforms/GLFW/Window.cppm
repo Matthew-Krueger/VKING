@@ -59,6 +59,12 @@ namespace VKING::Platform::GLFW {
         // apply context queue if required
         if (createInfo.pfn_ContextCurrentCallback) createInfo.pfn_ContextCurrentCallback();
 
+        ModuleLogger::record().trace("Registering the GLFW Window Close Event Callback to this window, and setting the user window pointer.");
+        glfwSetWindowUserPointer(m_GLFWwindow, this);
+
+        // The VKING_Platform_GLFW_WindowCloseCallback will handle if the callback is null
+        glfwSetWindowCloseCallback(m_GLFWwindow, VKING_Platform_GLFW_WindowCloseCallback);
+
     }
 
     Window::~Window() {

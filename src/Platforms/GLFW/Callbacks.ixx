@@ -19,15 +19,25 @@
 //
 // Created by Matthew Krueger on 1/6/26.
 //
+module;
+#include <GLFW/glfw3.h>
 
 export module VKING.Platform.GLFW:Callbacks;
 
 import :Logger;
+import VKING.Types.Window;
 
 extern "C" {
 
     export void VKING_Platform_GLFW_ErrorCallback(int error, const char* description) {
         VKING::Platform::GLFW::ModuleLogger::record().error("[GLFW Error Callback] GLFW Error: {} - {}", error, description);
+    }
+
+    export void VKING_Platform_GLFW_WindowCloseCallback(GLFWwindow *window) {
+        const auto userWindow = static_cast<VKING::Types::Window *>(glfwGetWindowUserPointer(window));
+        // I am pretty sure this is evil since technically we're casting away the lifetime of the window object
+        // since it's inside of a lifetime.
+        if (const auto callbackFN = userWindow->getWindowCloseRequestCallbackEventFN()) callbackFN(userWindow);
     }
 
 }

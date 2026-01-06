@@ -51,9 +51,18 @@ export namespace VKING::Types {
         /**
          * @brief Sets the window requests closure callback function
          *
+         * @note The platform is expected to perform C linkage on their side and call this function from within.
+         *
          * @param callback the Callback function
          */
-        virtual void setWindowCloseRequestCallbackEventFN(WindowCloseRequestCallbackEventFN callback) = 0;
+        void setWindowCloseRequestCallbackEventFN(const WindowCloseRequestCallbackEventFN callback) { m_WindowCloseRequestCallbackEventFN = callback; }
+
+        /**
+         * @brief Gets the windowCloseRequestCallbackEventFN
+         * @return The WindowCloseRequestCallbackEventFN
+         */
+        WindowCloseRequestCallbackEventFN getWindowCloseRequestCallbackEventFN() const { return m_WindowCloseRequestCallbackEventFN; }
+
 
         /**
          * @brief Gets the native window handle, type erased to void*
@@ -64,8 +73,10 @@ export namespace VKING::Types {
 
     protected:
         Window() = default;
+        void setProtectedWindowCloseRequestCallbackEventFN(const WindowCloseRequestCallbackEventFN callback) { m_WindowCloseRequestCallbackEventFN = callback; }
 
     private:
+        WindowCloseRequestCallbackEventFN m_WindowCloseRequestCallbackEventFN = nullptr;
 
     };
 }
