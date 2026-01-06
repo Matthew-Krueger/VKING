@@ -60,6 +60,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <cstdint>
+#include <variant>
 
 //#include <glm/glm.hpp>
 //#include <EASTL/vector.h>
@@ -70,5 +71,6 @@
 
 // VKING specific handlers, like signals.hpp
 #include "Signals.hpp"
+#include "ScoredType.hpp"
 
 #endif
