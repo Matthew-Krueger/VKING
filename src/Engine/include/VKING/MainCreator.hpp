@@ -89,10 +89,12 @@ extern int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** 
 #endif
 
 #ifdef VKING_INCLUDE_POSIX_MAIN
+#ifndef WIN32
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile
 int main(int argc, char ** argv) {
     return VKING_Main(argc, const_cast<const char**>(argv));
 }
+#endif
 #endif
 
 
