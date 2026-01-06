@@ -22,9 +22,9 @@
 
 // horray for ifdef hell
 
-export module VKING.Platform;
+export module VKING.Types.Platform;
 
-export namespace VKING::Platform {
+export namespace VKING::Types::Platform {
     class Window;
     class RHI;
     class PlatformManager;
@@ -97,6 +97,9 @@ export namespace VKING::Platform {
         virtual std::unique_ptr<Window> createWindow() = 0;
         virtual std::unique_ptr<RHI> createRHI() = 0;
 
+        [[nodiscard]] PlatformType getPlatformType() const { return m_PlatformType; }
+        [[nodiscard]] BackendType getBackendType() const { return m_PlatformBackendType; }
+        [[nodiscard]] PlatformSpecification::PlatformCreateInfo getPlatformCreateInfo() const { return m_PlatformCreateInfo; }
 
     protected:
         PlatformManager(

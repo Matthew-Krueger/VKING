@@ -17,9 +17,6 @@ target_sources(VKING_Engine
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
         Application.ixx
-        Window/Window.ixx
-        RHI/RHI.ixx
-        Platform/Platform.ixx
         EntryPointCallbacks.ixx
         Config/ConfigConstants.ixx
 )

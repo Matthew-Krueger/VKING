@@ -83,6 +83,7 @@ target_link_libraries(VKING_Platform_GLFW
         glfw
         PUBLIC
         VKING::SharedResources
+        VKING::Types
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )

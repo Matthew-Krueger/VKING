@@ -35,9 +35,7 @@ module VKING.EntryPointCallbacks;
 using EditorMainLogger = VKING::Log::Named<"EditorMain">;
 
 void VKING::registerLogger() {
-    Log::Init("VKING-Editor.log");
-    Log::setLevel(Log::Level::trace);
-    EditorMainLogger::record().info("Logger Registered.");
+    Log::Init("VKING-Editor.log", Log::Level::trace);
 }
 
 

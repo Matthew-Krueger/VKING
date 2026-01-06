@@ -42,7 +42,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
     VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
 
     using EntryPointLogger = VKING::Log::Named<"EntryPoint">;
-    EntryPointLogger::record().info("Logger Registered. Starting VKING");
+    EntryPointLogger::record().info("Global Logger Sinks Registered via VKING::RegisterLogger() callback. Starting VKING");
 
     VKING::Shutdown::registerInterruptHandler();
     EntryPointLogger::record().info("Interrupt handler registered.");

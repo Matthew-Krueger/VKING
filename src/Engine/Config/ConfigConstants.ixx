@@ -22,55 +22,55 @@
 
 export module VKING.EngineConfig;
 
-import VKING.Platform;
+import VKING.Types.Platform;
 
 namespace VKING::EngineConfig {
 
-        consteval auto supportedPlatforms() {
-        std::vector<ScoredType<Platform::PlatformType>> platforms;
+        constexpr auto supportedPlatforms() {
+        std::vector<ScoredType<Types::Platform::PlatformType>> platforms;
 
         if constexpr (VKING_HAS_GLFW == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::GLFW,    .score = 2 });  // cross-platform, less native
+            platforms.push_back({ .value = Types::Platform::PlatformType::GLFW,    .score = 2 });  // cross-platform, less native
         }
         if constexpr (VKING_HAS_WAYLAND == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::WAYLAND, .score = 1 });  // native Linux
+            platforms.push_back({ .value = Types::Platform::PlatformType::WAYLAND, .score = 1 });  // native Linux
         }
         if constexpr (VKING_HAS_X11 == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::X11,     .score = 1 });  // native Linux
+            platforms.push_back({ .value = Types::Platform::PlatformType::X11,     .score = 1 });  // native Linux
         }
         if constexpr (VKING_HAS_COCOA == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::COCOA,   .score = 1 });  // native macOS
+            platforms.push_back({ .value = Types::Platform::PlatformType::COCOA,   .score = 1 });  // native macOS
         }
         if constexpr (VKING_HAS_WIN32 == 1) {
-            platforms.push_back({ .value = Platform::PlatformType::WIN32,   .score = 1 });  // native Windows
+            platforms.push_back({ .value = Types::Platform::PlatformType::WIN32,   .score = 1 });  // native Windows
         }
 
         return platforms;
     }
 
-    consteval auto supportedBackends() {
-        std::vector<ScoredType<Platform::BackendType>> backends;
+    constexpr auto supportedBackends() {
+        std::vector<ScoredType<Types::Platform::BackendType>> backends;
 
         if constexpr (VKING_HAS_VULKAN == 1) {
-            backends.push_back({ .value = Platform::BackendType::VULKAN,       .score = 2 });  // powerful but complex and less native
+            backends.push_back({ .value = Types::Platform::BackendType::VULKAN,       .score = 2 });  // powerful but complex and less native
         }
         if constexpr (VKING_HAS_METAL == 1) {
-            backends.push_back({ .value = Platform::BackendType::METAL,        .score = 1 });  // native Apple
+            backends.push_back({ .value = Types::Platform::BackendType::METAL,        .score = 1 });  // native Apple
         }
         if constexpr (VKING_HAS_DIRECTX_12 == 1) {
-            backends.push_back({ .value = Platform::BackendType::DIRECTX_12,   .score = 1 });  // native Windows
+            backends.push_back({ .value = Types::Platform::BackendType::DIRECTX_12,   .score = 1 });  // native Windows
         }
         if constexpr (VKING_HAS_OPENGL == 1) {
-            backends.push_back({ .value = Platform::BackendType::OPENGL,       .score = 3 });  // legacy, avoid if possible
+            backends.push_back({ .value = Types::Platform::BackendType::OPENGL,       .score = 3 });  // legacy, avoid if possible
         }
         if constexpr (VKING_HAS_GNM == 1) {
-            backends.push_back({ .value = Platform::BackendType::GNM,          .score = 1 });  // native PlayStation
+            backends.push_back({ .value = Types::Platform::BackendType::GNM,          .score = 1 });  // native PlayStation
         }
 
         return backends;
     }
 
-    consteval uint16_t getPlatformScore(const std::vector<ScoredType<Platform::PlatformType, uint16_t>> &platforms, const Platform::PlatformType desiredPlatform) {
+    constexpr uint16_t getPlatformScore(const std::vector<ScoredType<Types::Platform::PlatformType, uint16_t>> &platforms, const Types::Platform::PlatformType desiredPlatform) {
 
         auto score = std::numeric_limits<uint16_t>::max();
         uint32_t candidates = 0;
@@ -86,7 +86,7 @@ namespace VKING::EngineConfig {
 
     }
 
-    consteval uint16_t getBackendScore(const std::vector<ScoredType<Platform::BackendType, uint16_t>> &backends, const Platform::BackendType desiredBackend) {
+    constexpr uint16_t getBackendScore(const std::vector<ScoredType<Types::Platform::BackendType, uint16_t>> &backends, const Types::Platform::BackendType desiredBackend) {
 
         auto score = std::numeric_limits<uint16_t>::max();
         uint32_t candidates = 0;
@@ -102,10 +102,10 @@ namespace VKING::EngineConfig {
 
     }
 
-    const std::vector<ScoredType<Platform::PlatformManager::PlatformSpecification>> &getAvailablePlatformConfigurations();
+    const std::vector<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> &getAvailablePlatformConfigurations();
 
-    export std::unique_ptr<Platform::PlatformManager> selectPlatform(
-        Platform::PlatformManager::PlatformSpecification desiredSpecification
+    export std::unique_ptr<Types::Platform::PlatformManager> selectPlatform(
+        Types::Platform::PlatformManager::PlatformSpecification desiredSpecification
     );
 
 }

@@ -9,16 +9,13 @@
 #   • Access to common types/macros via #include <VKING/Prerequisites.hpp>
 # ==============================================================================
 
-add_library(VKING_Shared_Resources STATIC
-        src/GLMDebug.cpp
-        src/Signals.cpp
-        src/Signals.hpp
-        include/VKING/Signals.hpp
+add_library(VKING_Types STATIC
+        src/Platform.ixx
 )
 
 
 # Nice namespaced alias for use throughout the project
-add_library(VKING::SharedResources ALIAS VKING_Shared_Resources)
+add_library(VKING::Types ALIAS VKING_Types)
 
 # -----------------------------------------------------------------------------
 # Public C++23 modules
@@ -27,11 +24,11 @@ add_library(VKING::SharedResources ALIAS VKING_Shared_Resources)
 #     import VKING.Engine.Math;
 # in their own translation units.
 # -----------------------------------------------------------------------------
-target_sources(VKING_Shared_Resources
+target_sources(VKING_Types
         PUBLIC
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
-        src/VKING/Log.ixx
+        src/Platform.ixx
 )
 
 # -----------------------------------------------------------------------------
@@ -40,7 +37,7 @@ target_sources(VKING_Shared_Resources
 # Any .cpp files that implement module partitions or internal helpers go here.
 # Prerequisites.hpp is listed here only so it's visible to CMake for PCH purposes.
 # -----------------------------------------------------------------------------
-target_sources(VKING_Shared_Resources
+target_sources(VKING_Types
         PRIVATE
         # include/VKING/Prerequisites.hpp  # Intentionally NOT listed as source
         # → It's a header-only PCH, not compiled directly into the object lib
@@ -54,11 +51,11 @@ target_sources(VKING_Shared_Resources
 # and any other public headers you add later.
 # Use generator expressions so this only applies during build, not install.
 # -----------------------------------------------------------------------------
-target_include_directories(VKING_Shared_Resources
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        # $<INSTALL_INTERFACE:include>  # Uncomment if you ever install the engine
-)
+#target_include_directories(VKING_Types
+#        PUBLIC
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#        # $<INSTALL_INTERFACE:include>  # Uncomment if you ever install the engine
+#)
 
 # -----------------------------------------------------------------------------
 # Precompiled Header – Opt-in for consumers
@@ -69,25 +66,24 @@ target_include_directories(VKING_Shared_Resources
 # This reuses our precompiled version without forcing it.
 # If a consumer has their own PCH, they can simply ignore this.
 # -----------------------------------------------------------------------------
-target_precompile_headers(VKING_Shared_Resources
-        PRIVATE
-        include/VKING/Prerequisites.hpp
+target_precompile_headers(VKING_Types
+        REUSE_FROM
+        VKING::SharedResources
 )
 
 # -----------------------------------------------------------------------------
 # Compile features and dependencies
 # -----------------------------------------------------------------------------
-target_compile_features(VKING_Shared_Resources
+target_compile_features(VKING_Types
         PUBLIC
         cxx_std_23  # Consumers inherit C++23 requirement
 )
 
-target_link_libraries(VKING_Shared_Resources
+target_link_libraries(VKING_Types
         PRIVATE
         # Internal dependency – not propagated to consumers
         PUBLIC
-        glm::glm
-        spdlog::spdlog
+        VKING::SharedResources
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )
@@ -103,6 +99,4 @@ target_link_libraries(VKING_Shared_Resources
 # ==============================================================================
 
 # Apply warnings
-vking_apply_warnings(VKING_Shared_Resources)
-
-target_compile_definitions(VKING_Shared_Resources PUBLIC SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+vking_apply_warnings(VKING_Types)

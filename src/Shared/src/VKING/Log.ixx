@@ -75,8 +75,9 @@ export namespace VKING {
          * Creates shared file and console sinks and registers them with spdlog.
          *
          * @param logFilePath Path to the log file (defaults to "VKING.log")
+         * @param initialLevel The initial level to set
          */
-        static void Init(const std::string& logFilePath = DEFAULT_LOG_FILE_PATH);
+        static void Init(const std::string& logFilePath = DEFAULT_LOG_FILE_PATH, Level initialLevel = Level::trace);
 
         /**
          * @brief Set the log pattern for all sinks.
@@ -295,18 +296,20 @@ std::shared_ptr<spdlog::logger> VKING::Log::Named<Name>::get() {
 
     // Static local ensures thread-safe lazy initialization (Meyers' singleton)
     static std::shared_ptr<spdlog::logger> s_Logger = [] {
+        Level globalLevel = spdlog::get_level();
         auto logger = spdlog::get(Name.data);
         if (!logger) {
             std::vector<spdlog::sink_ptr> sinks{detail::file_sink, detail::console_sink};
             logger = std::make_shared<spdlog::logger>(Name.data, sinks.begin(), sinks.end());
+            logger->set_level(globalLevel);
             spdlog::register_logger(logger);
-            auto loc = std::source_location::current();
+            const auto loc = std::source_location::current();
             logger->log(spdlog::source_loc{
                             loc.file_name(),
                             static_cast<int32_t>(loc.line()),
                             loc.function_name()
                         },
-                        Log::Level::trace,
+                        Level::trace,
                         "Logger {} did not exist within spdlog and was initialized and registered.",
                         Name.data
             );
@@ -346,11 +349,13 @@ std::shared_ptr<spdlog::logger> VKING::Log::Named<Name>::get() {
 }
 
 // Initialize global sinks (called once)
-void VKING::Log::Init(const std::string& logFilePath) {
+void VKING::Log::Init(const std::string& logFilePath, Level initialLevel) {
 
     // Ensure initialization happens only once
     static std::atomic_bool s_LogInitialized{false};
     if (!s_LogInitialized.exchange(true)) {
+
+        spdlog::set_level(initialLevel);
 
         detail::file_sink   = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath);
         detail::console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -358,6 +363,8 @@ void VKING::Log::Init(const std::string& logFilePath) {
         spdlog::set_pattern(VKING::Log::DEFAULT_LOG_PATTERN);
         detail::file_sink->set_pattern(DEFAULT_LOG_PATTERN);
         detail::console_sink->set_pattern(DEFAULT_LOG_PATTERN);
+        detail::file_sink->set_level(initialLevel);
+        detail::console_sink->set_level(initialLevel);
 
         // Automatic flush every 3 seconds to reduce data loss on crash
         spdlog::flush_every(std::chrono::seconds(3));
@@ -377,9 +384,20 @@ void VKING::Log::setFormat(const std::string& format) {
 
 }
 
+using testLogger = VKING::Log::Named<"TestLogger">;
+
 // Apply new global log level
 void VKING::Log::setLevel(VKING::Log::Level level) {
+
+
     spdlog::set_level(level);
+    detail::file_sink->set_level(level);
+    detail::console_sink->set_level(level);
+
+    spdlog::apply_all([&](const std::shared_ptr<spdlog::logger>& logger) {
+        logger->set_level(level);
+    });
+
 }
 
 // Ensure logger exists when Named<>::get() is called

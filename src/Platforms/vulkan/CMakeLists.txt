@@ -85,6 +85,7 @@ target_link_libraries(VKING_Platform_Vulkan
         Vulkan::Vulkan
         PUBLIC
         VKING::SharedResources
+        VKING::Types
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )

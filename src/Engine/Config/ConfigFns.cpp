@@ -21,7 +21,7 @@
 //
 
 module VKING.EngineConfig;
-import VKING.Platform;
+import VKING.Types.Platform;
 
 
 #if (VKING_HAS_GLFW == 1)
@@ -33,7 +33,7 @@ import VKING.Platform;
 #endif
 
 #if (VKING_HAS_GLFW_VULKAN_GLUE == 1)
-// import VKING.Platform.Glue.GLFWVulkan;
+import VKING.Platform.Glue.GLFWVulkan;
 //extern "C" VKING::Platform::PlatformManager* VKING_Platform_Glue_GLFWVulkan_Create();
 #endif
 
@@ -56,25 +56,24 @@ namespace VKING::EngineConfig {
     using EngineConfigurationLogger = Log::Named<"EngineConfig">;
 
     // === Full config table with precomputed scores and factory ===
-    const std::vector<ScoredType<Platform::PlatformManager::PlatformSpecification>> &getAvailablePlatformConfigurations() {
+    const std::vector<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> &getAvailablePlatformConfigurations() {
 
         // meyers singleton since the cartesian product of available products may become large
         // and the function is not constexpr-able due to the need for link time addresses
-        static std::vector<ScoredType<Platform::PlatformManager::PlatformSpecification>> s_Table = []() {
-            std::vector<ScoredType<Platform::PlatformManager::PlatformSpecification>> table;
+        static std::vector<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> s_Table = [] {
+            std::vector<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> table;
 
 #if VKING_HAS_GLFW_VULKAN_GLUE == 1
             table.push_back(
                 {
                     .value = {
-                        .p_Platform = std::nullopt,
-                        .platformCreateInfo = std::make_optional(Platform::PlatformManager::PlatformSpecification::PlatformCreateInfo{
+                        .platformCreateInfo = std::make_optional(Types::Platform::PlatformManager::PlatformSpecification::PlatformCreateInfo{
                             .pfn_PlatformManagerCreate = VKING_Platform_Glue_GLFWVulkan_Create
                         }),
-                        .platformType = Platform::PlatformType::GLFW,
-                        .backendType = Platform::BackendType::VULKAN
+                        .platformType = Types::Platform::PlatformType::GLFW,
+                        .backendType = Types::Platform::BackendType::VULKAN
                     },
-                    .score = static_cast<uint16_t>(getPlatformScore(supportedPlatforms(), Platform::PlatformType::GLFW) * getBackendScore(supportedBackends(), Platform::BackendType::VULKAN))
+                    .score = static_cast<uint16_t>(getPlatformScore(supportedPlatforms(), Types::Platform::PlatformType::GLFW) * getBackendScore(supportedBackends(), Types::Platform::BackendType::VULKAN))
                 });
 #endif
             // Add more as implemented...
@@ -86,8 +85,8 @@ namespace VKING::EngineConfig {
 
     }
 
-    std::unique_ptr<Platform::PlatformManager> selectPlatform(
-        Platform::PlatformManager::PlatformSpecification desiredSpecification
+    std::unique_ptr<Types::Platform::PlatformManager> selectPlatform(
+        Types::Platform::PlatformManager::PlatformSpecification desiredSpecification
     ) {
 
         EngineConfigurationLogger::record().info("Attempting to select platform: {}", platformToString(desiredSpecification.platformType));
@@ -97,13 +96,13 @@ namespace VKING::EngineConfig {
         const auto &table = getAvailablePlatformConfigurations();
 
         // --- Step 1: Try to find an exact match first ---
-        std::optional<ScoredType<Platform::PlatformManager::PlatformSpecification>> preferredCandidate;
+        std::optional<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> preferredCandidate;
         uint16_t minPreferredScore = std::numeric_limits<uint16_t>::max();
 
         for (const auto& entry : table) {
-            const bool platformMatches = (desiredSpecification.platformType == VKING::Platform::PlatformType::PLATFORM_NO_PREFERENCE ||
+            const bool platformMatches = (desiredSpecification.platformType == Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE ||
                                     desiredSpecification.platformType == entry.value.platformType);
-            const bool backendMatches = (desiredSpecification.backendType == VKING::Platform::BackendType::BACKEND_NO_PREFERENCE ||
+            const bool backendMatches = (desiredSpecification.backendType == Types::Platform::BackendType::BACKEND_NO_PREFERENCE ||
                                    desiredSpecification.backendType == entry.value.backendType);
 
             if (platformMatches && backendMatches) {
@@ -115,7 +114,7 @@ namespace VKING::EngineConfig {
         }
 
         if (preferredCandidate && preferredCandidate->score != std::numeric_limits<uint16_t>::max()) {
-            EngineConfigurationLogger::record().debug("Found suitable requested backend configuration with score {}.", preferredCandidate->score);
+            EngineConfigurationLogger::record().debug("Found suitable requested backend configuration with score {}. (lower is better)", preferredCandidate->score);
             // Proceed with this candidate
         } else {
 
@@ -134,18 +133,18 @@ namespace VKING::EngineConfig {
                 EngineConfigurationLogger::record().critical("No suitable platform/backend configuration found in the table.");
                 return {}; // Return an empty/uninitialized spec indicating failure
             }
-            EngineConfigurationLogger::record().info("Falling back to best available configuration with score {}.", preferredCandidate->score);
+            EngineConfigurationLogger::record().info("Falling back to best available configuration with score {}. (lower is better)", preferredCandidate->score);
 
         }
 
-        EngineConfigurationLogger::record().info("Selected platform: {}", Platform::platformToString(preferredCandidate->value.platformType));
-        EngineConfigurationLogger::record().info("Selected backend: {}", Platform::backendToString(preferredCandidate->value.backendType));
+        EngineConfigurationLogger::record().info("Selected platform: {}", Types::Platform::platformToString(preferredCandidate->value.platformType));
+        EngineConfigurationLogger::record().info("Selected backend: {}", Types::Platform::backendToString(preferredCandidate->value.backendType));
 
 
         // at this point, preferredCandidate now has our best or preferred candidate
         // now, we call its function pointer, wrap the result, and bam, we're done
 
-        Platform::PlatformManager* result = nullptr;
+        Types::Platform::PlatformManager* result = nullptr;
 
         if (preferredCandidate->value.platformCreateInfo.has_value()) {
             result = preferredCandidate->value.platformCreateInfo->pfn_PlatformManagerCreate();
@@ -159,7 +158,7 @@ namespace VKING::EngineConfig {
         }
 
         // result successful
-        return std::unique_ptr<Platform::PlatformManager>(result);
+        return std::unique_ptr<Types::Platform::PlatformManager>(result);
 
     }
 

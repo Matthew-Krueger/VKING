@@ -27,10 +27,13 @@ module;
 export module VKING.Application;
 
 import VKING.Log;
+import VKING.Types.Platform;
+import VKING.EngineConfig;
 
 export namespace VKING {
     class Application {
     public:
+        explicit Application();
         virtual ~Application() = default;
 
         /**
@@ -39,12 +42,19 @@ export namespace VKING {
         void run();
 
     private:
+        std::unique_ptr<VKING::Types::Platform::PlatformManager> m_PlatformManager;
     };
 
 } // VKING
 
 
 namespace VKING {
+
+    Application::Application() {
+
+        m_PlatformManager = VKING::EngineConfig::selectPlatform({.platformType = Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE, .backendType = Types::Platform::BackendType::VULKAN});
+
+    }
 
     void Application::run() {
 

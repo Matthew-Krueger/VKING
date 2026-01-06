@@ -1,1 +1,0 @@
-The RHI module is an interface module for the platform specific RHI.
