@@ -53,6 +53,6 @@ namespace VKING::Platform::Glue {
 
 // now, we create a c linkage specifically to create this object
 export extern "C" VKING::Types::Platform::PlatformManager* VKING_Platform_Glue_GLFWVulkan_Create(){
-    PlatformGLFWVulkanLogger::record().trace("Invoked the GLFWVulkan GLUE LIBRARY Create Function");
+    PlatformGLFWVulkanLogger::record().debug("Invoked the GLFWVulkan GLUE LIBRARY Create Function");
     return new VKING::Platform::Glue::GLFWVulkan(VKING_Platform_Glue_GLFWVulkan_Create);
 }

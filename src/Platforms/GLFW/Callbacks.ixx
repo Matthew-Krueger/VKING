@@ -34,6 +34,9 @@ extern "C" {
     }
 
     export void VKING_Platform_GLFW_WindowCloseCallback(GLFWwindow *window) {
+
+        VKING::Platform::GLFW::ModuleLogger::record().debug("[GLFW Window Close Callback] GLFW Window Close Callback triggered");
+
         const auto userWindow = static_cast<VKING::Types::Window *>(glfwGetWindowUserPointer(window));
         // I am pretty sure this is evil since technically we're casting away the lifetime of the window object
         // since it's inside of a lifetime.

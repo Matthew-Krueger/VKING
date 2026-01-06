@@ -35,7 +35,7 @@ namespace VKING::Platform::Glue {
 
     std::unique_ptr<Types::Window> GLFWVulkan::createWindow(const Types::Window::WindowCreateInfo &createInfo) {
 
-        PlatformGLFWVulkanLogger::record().info("Creating GLFW window.");
+        PlatformGLFWVulkanLogger::record().debug("Creating GLFW window.");
 
         // create the window
         GLFW::Window::WindowCreateInfo windowCreateInfo;
