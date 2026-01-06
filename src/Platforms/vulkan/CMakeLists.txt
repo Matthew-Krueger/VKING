@@ -29,6 +29,8 @@ target_sources(VKING_Platform_Vulkan
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
         #Platform.Glue.GLFWVulkan.ixx
+        Vulkan.ixx
+        Callbacks.ixx
 )
 
 # -----------------------------------------------------------------------------
