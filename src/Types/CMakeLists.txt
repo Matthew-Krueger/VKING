@@ -29,6 +29,7 @@ target_sources(VKING_Types
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
         src/Platform.ixx
+        src/Window.ixx
 )
 
 # -----------------------------------------------------------------------------

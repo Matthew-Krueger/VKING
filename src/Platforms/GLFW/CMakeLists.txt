@@ -10,7 +10,8 @@
 # ==============================================================================
 
 add_library(VKING_Platform_GLFW STATIC
-        dummy.cpp
+        Window.ixx
+        Window.cppm
 )
 
 
@@ -29,6 +30,11 @@ target_sources(VKING_Platform_GLFW
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
         #Platform.Glue.GLFWVulkan.ixx
+        GLFW.ixx
+        Callbacks.ixx
+        Window.ixx
+        GLFWModuleLogger.ixx
+        Window.cppm
 )
 
 # -----------------------------------------------------------------------------

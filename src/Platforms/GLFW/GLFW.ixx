@@ -17,13 +17,11 @@
  */
 
 //
-// Created by Matthew Krueger on 1/4/26.
+// Created by Matthew Krueger on 1/6/26.
 //
 
-// Empty.cpp - ensures the static library has at least one object file
-// This prevents empty .a archives on macOS
-void dummyGLFW() {
+export module VKING.Platform.GLFW;
 
-    std::cout << "Dummy function called" << std::endl;
-
-}
+import :Logger;
+import :Callbacks;
+export import :Window;

@@ -61,6 +61,7 @@
 #include <iostream>
 #include <cstdint>
 #include <variant>
+#include <atomic>
 
 //#include <glm/glm.hpp>
 //#include <EASTL/vector.h>

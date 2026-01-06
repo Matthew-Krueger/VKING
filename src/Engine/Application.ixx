@@ -29,6 +29,7 @@ export module VKING.Application;
 import VKING.Log;
 import VKING.Types.Platform;
 import VKING.EngineConfig;
+import VKING.Types.Window;
 
 export namespace VKING {
     class Application {
@@ -43,6 +44,7 @@ export namespace VKING {
 
     private:
         std::unique_ptr<VKING::Types::Platform::PlatformManager> m_PlatformManager;
+        std::unique_ptr<Types::Window> m_Window;
     };
 
 } // VKING
@@ -53,7 +55,7 @@ namespace VKING {
     Application::Application() {
 
         m_PlatformManager = VKING::EngineConfig::selectPlatform({.platformType = Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE, .backendType = Types::Platform::BackendType::VULKAN});
-
+        m_Window = m_PlatformManager->createWindow({"VKING Window", 1280, 720});
     }
 
     void Application::run() {
@@ -72,6 +74,8 @@ namespace VKING {
             // just while we don't have a real event loop or load, lets prevent the thread from infinitely sinning
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             //VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
+
+            m_Window->pollEvents();
 
         }
 

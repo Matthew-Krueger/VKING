@@ -24,11 +24,12 @@ export module VKING.Platform.Glue.GLFWVulkan;
 
 import VKING.Types.Platform;
 import VKING.Log;
+import VKING.Types.Window;
 
 using PlatformGLFWVulkanLogger = VKING::Log::Named<"PlatformCreator">;
 
 namespace VKING::Platform::Glue {
-    class GLFWVulkan final : public Types::Platform::PlatformManager {
+    export class GLFWVulkan final : public Types::Platform::PlatformManager {
         /**
          * Constructs an instance of GLFWVulkan, a specialized platform manager for the Vulkan backend using GLFW.
          *
@@ -40,7 +41,7 @@ namespace VKING::Platform::Glue {
     public:
         explicit GLFWVulkan(const Types::Platform::CreateFn pfn_CreateFunctionArchive) : PlatformManager(Types::Platform::BackendType::VULKAN, Types::Platform::PlatformType::GLFW, PlatformSpecification::PlatformCreateInfo{pfn_CreateFunctionArchive}){};
 
-        std::unique_ptr<Types::Platform::Window> createWindow() override;
+        std::unique_ptr<Types::Window> createWindow(const Types::Window::WindowCreateInfo &windowCreateInfo) override;
 
         std::unique_ptr<Types::Platform::RHI> createRHI() override;
 
@@ -48,18 +49,10 @@ namespace VKING::Platform::Glue {
 
     };
 
-    std::unique_ptr<Types::Platform::Window> GLFWVulkan::createWindow() {
-        return nullptr;
-    }
-
-    std::unique_ptr<Types::Platform::RHI> GLFWVulkan::createRHI() {
-        return nullptr;
-    }
-
 }
 
 // now, we create a c linkage specifically to create this object
 export extern "C" VKING::Types::Platform::PlatformManager* VKING_Platform_Glue_GLFWVulkan_Create(){
-    PlatformGLFWVulkanLogger::record().trace("Invoked the GLFWVulkan Create Function");
+    PlatformGLFWVulkanLogger::record().trace("Invoked the GLFWVulkan GLUE LIBRARY Create Function");
     return new VKING::Platform::Glue::GLFWVulkan(VKING_Platform_Glue_GLFWVulkan_Create);
 }

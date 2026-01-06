@@ -17,9 +17,13 @@
  */
 
 //
-// Created by Matthew Krueger on 1/5/26.
+// Created by Matthew Krueger on 1/6/26.
 //
 
-export module VKING.Platform.Vulkan;
+export module VKING.Platform.GLFW:Logger;
 
-export import :Callbacks;
+import VKING.Log;
+
+namespace VKING::Platform::GLFW {
+    using ModuleLogger = Log::Named<"GLFW (native window)">;
+}

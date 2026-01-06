@@ -23,10 +23,10 @@
 // horray for ifdef hell
 
 export module VKING.Types.Platform;
+import VKING.Types.Window;
 
 export namespace VKING::Types::Platform {
 
-    class Window;
     class RHI;
     class PlatformManager;
 
@@ -247,7 +247,7 @@ export namespace VKING::Types::Platform {
          *
          * @return A unique pointer to the created Window instance.
          */
-        virtual std::unique_ptr<Window> createWindow() = 0;
+        virtual std::unique_ptr<Window> createWindow(const Window::WindowCreateInfo &windowCreateInfo) = 0;
 
         /**
          * @brief Creates a generic RHI (backed by a platform specific RHI)

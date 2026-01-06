@@ -11,6 +11,7 @@
 
 add_library(VKING_Platform_Glue_GLFWVulkan STATIC
         Platform.Glue.GLFWVulkan.ixx
+        GLFWVulkan.cpp
 )
 
 
@@ -84,6 +85,8 @@ target_link_libraries(VKING_Platform_Glue_GLFWVulkan
         # Internal dependency – not propagated to consumers
         glfw
         Vulkan::Vulkan
+        VKING::Platform::GLFW # technically I believe this library should force these symbols to load?
+        VKING::Platform::Vulkan # technically I believe this library should force these symbols to load?
         PUBLIC
         VKING::SharedResources
         VKING::Types

@@ -17,9 +17,17 @@
  */
 
 //
-// Created by Matthew Krueger on 1/5/26.
+// Created by Matthew Krueger on 1/6/26.
 //
 
-export module VKING.Platform.Vulkan;
+export module VKING.Platform.GLFW:Callbacks;
 
-export import :Callbacks;
+import :Logger;
+
+extern "C" {
+
+    export void VKING_Platform_GLFW_ErrorCallback(int error, const char* description) {
+        VKING::Platform::GLFW::ModuleLogger::record().error("[GLFW Error Callback] GLFW Error: {} - {}", error, description);
+    }
+
+}
