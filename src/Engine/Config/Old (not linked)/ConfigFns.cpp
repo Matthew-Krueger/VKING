@@ -21,7 +21,7 @@
 //
 
 module;
-#include "../include/VKING/Logger.hpp"
+#include "../../include/VKING/Logger.hpp"
 
 
 module VKING.EngineConfig;

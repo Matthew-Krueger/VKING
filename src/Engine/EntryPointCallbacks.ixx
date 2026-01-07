@@ -19,6 +19,8 @@
 //
 // Created by Matthew Krueger on 1/5/26.
 //
+module;
+#include "VKING/Logger.hpp"
 
 export module VKING.EntryPointCallbacks;
 import VKING.Application;
@@ -58,5 +60,7 @@ export namespace VKING {
      * (e.g., `Log::Init()`).
      *
      */
-    extern void registerLogger();
+
+    extern Logger::CreateInfo getLoggerConfig();
+
 }

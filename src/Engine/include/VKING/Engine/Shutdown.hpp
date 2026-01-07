@@ -17,9 +17,9 @@
  */
 
 //
-// Created by Matthew Krueger on 1/5/26.
+// Created by Matthew Krueger on 1/7/26.
 //
 
 #pragma once
 
-#include "../../src/ScoredType.hpp"
+#include "../../../Signals/Signals.hpp"

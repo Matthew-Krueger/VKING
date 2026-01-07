@@ -19,10 +19,9 @@
 //
 // Created by Matthew Krueger on 1/6/26.
 //
-
 #include "LoggerStableCABI.h"
 #include "LoggerTemplates.hpp"
-#include "LoggerConfig.hpp"
+#include "LoggerHost.hpp"
 #include <VKING/CPluginInterface.h>
 
 #include <fmt/format.h>
@@ -31,7 +30,13 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <atomic>
 
-import VKING.PluginHost;
+
+
+extern "C" VKING_CALL void VKING_Logging_LogMessage(const VKING_Logging_Level level, const char *logger, const char *file,
+                                                        const int32_t line, const char *function, const char *message);
+extern "C" VKING_CALL VKING_Logging_Level VKING_Logging_getGlobalLogLevel();
+extern "C" VKING_CALL void VKING_Logging_setGlobalLogLevel(VKING_Logging_Level level);
+
 
 namespace VKING::Logger {
     namespace detail {
@@ -42,6 +47,22 @@ namespace VKING::Logger {
 
     spdlog::level::level_enum getLogLevelFromVKING_Logging_Level(const VKING_Logging_Level level);
     VKING_Logging_Level getLogLevelFromSpdlogLevel(const spdlog::level::level_enum level);
+
+
+    const VKING_Logging_API * Host::getLoggingAPISpec() {
+
+        static VKING_Logging_API api ={
+            .abiVersion = 1,
+            .structSize = sizeof(VKING_Logging_API),
+            .logMessage = VKING_Logging_LogMessage,
+            .getGlobalLogLevel = VKING_Logging_getGlobalLogLevel,
+            .setGlobalLogLevel = VKING_Logging_setGlobalLogLevel
+        };
+
+        return &api;
+
+    }
+
 }
 
 
@@ -77,19 +98,6 @@ extern "C" VKING_CALL void VKING_Logging_setGlobalLogLevel(VKING_Logging_Level l
 }
 
 namespace VKING::Logger {
-    const VKING_Logging_API *getLoggingAPISpec() {
-
-        static VKING_Logging_API api ={
-            .abiVersion = 1,
-            .structSize = sizeof(VKING_Logging_API),
-            .logMessage = VKING_Logging_LogMessage,
-            .getGlobalLogLevel = VKING_Logging_getGlobalLogLevel,
-            .setGlobalLogLevel = VKING_Logging_setGlobalLogLevel
-        };
-
-        return &api;
-
-    }
 
     spdlog::level::level_enum getLogLevelFromVKING_Logging_Level(const VKING_Logging_Level level) {
         switch (level) {
@@ -115,75 +123,79 @@ namespace VKING::Logger {
         }
     }
 
-    void Init(const std::string &fileName, const VKING_Logging_Level initialLevel) {
-        // Ensure initialization happens only once
-        static std::atomic_bool s_LogInitialized{false};
-        if (!s_LogInitialized.exchange(true)) {
+    namespace Host {
+        void Init(CreateInfo loggerCreateInfo) {
+            // Ensure initialization happens only once
+            static std::atomic_bool s_LogInitialized{false};
+            if (!s_LogInitialized.exchange(true)) {
 
-            detail::install(PluginHost::hostsideGetHostABISpec()->loggingAPISpec);
+                detail::install(getLoggingAPISpec());
 
-            spdlog::set_level(getLogLevelFromVKING_Logging_Level(initialLevel));
+                spdlog::set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
 
-            detail::g_FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(fileName);
-            detail::g_ConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+                detail::g_FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(loggerCreateInfo.fileName);
+                detail::g_ConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
-            spdlog::set_pattern(DEFAULT_LOG_PATTERN);
-            detail::g_ConsoleSink->set_pattern(DEFAULT_LOG_PATTERN);
-            detail::g_FileSink->set_pattern(DEFAULT_LOG_PATTERN);
-            detail::g_ConsoleSink->set_level(getLogLevelFromVKING_Logging_Level(initialLevel));
-            detail::g_FileSink->set_level(getLogLevelFromVKING_Logging_Level(initialLevel));
+                spdlog::set_pattern(Host::DEFAULT_LOG_PATTERN);
+                detail::g_ConsoleSink->set_pattern(Host::DEFAULT_LOG_PATTERN);
+                detail::g_FileSink->set_pattern(Host::DEFAULT_LOG_PATTERN);
+                detail::g_ConsoleSink->set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
+                detail::g_FileSink->set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
 
-            // Automatic flush every 3 seconds to reduce data loss on crash
-            spdlog::flush_every(std::chrono::seconds(3));
+                // Automatic flush every 3 seconds to reduce data loss on crash
+                spdlog::flush_every(std::chrono::seconds(3));
 
-            // lastly, we'll aquire one logger
-            detail::g_Logger = spdlog::get("VKING");
-            if (!detail::g_Logger) {
-                std::vector<spdlog::sink_ptr> sinks{detail::g_FileSink, detail::g_ConsoleSink};
-                detail::g_Logger = std::make_shared<spdlog::logger>("VKING", sinks.begin(), sinks.end());
-                detail::g_Logger->set_level(getLogLevelFromVKING_Logging_Level(initialLevel));
-                spdlog::register_logger(detail::g_Logger);
-                const auto loc = std::source_location::current();
-                detail::g_Logger->log(spdlog::source_loc{
-                                loc.file_name(),
-                                static_cast<int32_t>(loc.line()),
-                                loc.function_name()
-                            },
-                            spdlog::level::trace,
-                            "Logger VKING did not exist within spdlog and was initialized and registered."
-                );
-            } else {
-                // External logger exists — be cooperative but cautious
+                // lastly, we'll aquire one logger
+                detail::g_Logger = spdlog::get("VKING");
+                if (!detail::g_Logger) {
+                    std::vector<spdlog::sink_ptr> sinks{detail::g_FileSink, detail::g_ConsoleSink};
+                    detail::g_Logger = std::make_shared<spdlog::logger>("VKING", sinks.begin(), sinks.end());
+                    detail::g_Logger->set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
+                    spdlog::register_logger(detail::g_Logger);
+                    const auto loc = std::source_location::current();
+                    detail::g_Logger->log(spdlog::source_loc{
+                                    loc.file_name(),
+                                    static_cast<int32_t>(loc.line()),
+                                    loc.function_name()
+                                },
+                                spdlog::level::trace,
+                                "Logger VKING did not exist within spdlog and was initialized and registered."
+                    );
+                } else {
+                    // External logger exists — be cooperative but cautious
 
-                // Ensure our sinks are present (idempotently)
-                auto &existing_sinks = detail::g_Logger->sinks();
-                bool has_file = false, has_console = false;
-                for (const auto &sink: existing_sinks) {
-                    if (sink == detail::g_FileSink) has_file = true;
-                    if (sink == detail::g_ConsoleSink) has_console = true;
+                    // Ensure our sinks are present (idempotently)
+                    auto &existing_sinks = detail::g_Logger->sinks();
+                    bool has_file = false, has_console = false;
+                    for (const auto &sink: existing_sinks) {
+                        if (sink == detail::g_FileSink) has_file = true;
+                        if (sink == detail::g_ConsoleSink) has_console = true;
+                    }
+
+                    if (!has_file) existing_sinks.push_back(detail::g_FileSink);
+                    if (!has_console) existing_sinks.push_back(detail::g_ConsoleSink);
+
+                    // level to match VKING globals
+                    //logger->set_pattern(spdlog::get_pattern());
+                    detail::g_Logger->set_pattern(Host::DEFAULT_LOG_PATTERN);
+                    // for now we'll just set the pattern to match our constexpr default, this might break some things, but if the consumer gets here, they chose the footgun, not me.
+                    detail::g_Logger->set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
+
+                    const auto loc = std::source_location::current();
+                    detail::g_Logger->log(spdlog::source_loc{
+                                    loc.file_name(),
+                                    static_cast<int32_t>(loc.line()),
+                                    loc.function_name()
+                                },
+                                spdlog::level::err,
+                                "Logger VKING already exists, but VKING is trying to register it for the first time. Adding VKING sinks. Please reconsider and see if you can avoid registering the logger yourself."
+                    );
                 }
-
-                if (!has_file) existing_sinks.push_back(detail::g_FileSink);
-                if (!has_console) existing_sinks.push_back(detail::g_ConsoleSink);
-
-                // level to match VKING globals
-                //logger->set_pattern(spdlog::get_pattern());
-                detail::g_Logger->set_pattern(DEFAULT_LOG_PATTERN);
-                // for now we'll just set the pattern to match our constexpr default, this might break some things, but if the consumer gets here, they chose the footgun, not me.
-                detail::g_Logger->set_level(getLogLevelFromVKING_Logging_Level(initialLevel));
-
-                const auto loc = std::source_location::current();
-                detail::g_Logger->log(spdlog::source_loc{
-                                loc.file_name(),
-                                static_cast<int32_t>(loc.line()),
-                                loc.function_name()
-                            },
-                            spdlog::level::err,
-                            "Logger VKING already exists, but VKING is trying to register it for the first time. Adding VKING sinks. Please reconsider and see if you can avoid registering the logger yourself."
-                );
+            } else {
+                std::cerr << "VKING::Log::Init() called more than once!" << std::endl;
             }
-        } else {
-            std::cerr << "VKING::Log::Init() called more than once!" << std::endl;
         }
     }
+
 }
+

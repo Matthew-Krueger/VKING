@@ -70,8 +70,4 @@
 //#include <spdlog/sinks/stdout_color_sinks.h>
 // etc
 
-// VKING specific handlers, like signals.hpp
-#include "Signals.hpp"
-#include "ScoredType.hpp"
-
 #endif

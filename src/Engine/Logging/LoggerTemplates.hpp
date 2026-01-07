@@ -369,4 +369,10 @@ namespace VKING::Logger {
             return LogRecorder{loc};
         }
     };
+
+    struct CreateInfo {
+        std::string fileName;
+        Level level;
+    };
+
 } // namespace VKING::Logger

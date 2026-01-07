@@ -20,9 +20,9 @@
 // Created by Matthew Krueger on 1/7/26.
 //
 module;
-#include "../Logging/LoggerConfig.hpp"
 #include "PluginABIBaseSpec.h"
-
+#include <VKING/Logger.hpp>
+#include "../Logging/LoggerHost.hpp"
 export module VKING.PluginHost;
 
 
@@ -35,7 +35,7 @@ export namespace VKING::PluginHost {
         static const VKING_ABI_SPEC api = {
             .abiVersion = 1,
             .structSize = sizeof(VKING_ABI_SPEC),
-            .loggingAPISpec = Logger::getLoggingAPISpec()
+            .loggingAPISpec = Logger::Host::getLoggingAPISpec()
         };
 
         return &api;

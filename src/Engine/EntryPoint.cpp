@@ -22,8 +22,9 @@
 
 #define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
 #include <VKING/MainCreator.hpp>
-#include <VKING/Signals.hpp>
+#include <VKING/Engine/Shutdown.hpp>
 #include <VKING/Logger.hpp>
+#include "Logging/LoggerHost.hpp"
 
 import VKING.Application;
 import VKING.EntryPointCallbacks;
@@ -33,7 +34,7 @@ static constexpr VKING::Logger::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKI
 /* Actual Main function */
 int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
 
-    VKING::registerLogger();
+    VKING::Logger::Host::Init(VKING::getLoggerConfig());
 
     // no matter what we will override the logger level here
     // save what the consumer had set

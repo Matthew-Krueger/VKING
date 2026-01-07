@@ -21,3 +21,7 @@
 //
 
 #include "../include/VKING/Prerequisites.hpp"
+
+void VKING_DUMMY_FN_IN_SHARED_FOR_NOW() {
+    return;
+}

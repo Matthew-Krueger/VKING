@@ -11,9 +11,6 @@
 
 add_library(VKING_Shared_Resources STATIC
         src/GLMDebug.cpp
-        src/Signals.cpp
-        src/Signals.hpp
-        include/VKING/Signals.hpp
 )
 
 

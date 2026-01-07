@@ -22,13 +22,11 @@
 module;
 #include <chrono>
 #include <thread>
-#include "../include/VKING/Logger.hpp"
-
-
+#include <VKING/Engine/Shutdown.hpp>
+#include <VKING/Logger.hpp>
 export module VKING.Application;
 
 import VKING.Types.Platform;
-import VKING.EngineConfig;
 import VKING.Types.Window;
 
 export namespace VKING {
@@ -43,8 +41,8 @@ export namespace VKING {
         void run();
 
     private:
-        std::unique_ptr<VKING::Types::Platform::PlatformManager> m_PlatformManager;
-        std::unique_ptr<Types::Window> m_Window;
+        //std::unique_ptr<VKING::Types::Platform::PlatformManager> m_PlatformManager;
+        //std::unique_ptr<Types::Window> m_Window;
     };
 
 } // VKING
@@ -54,12 +52,12 @@ namespace VKING {
 
     Application::Application() {
 
-        m_PlatformManager = VKING::EngineConfig::selectPlatform({.platformType = Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE, .backendType = Types::Platform::BackendType::VULKAN});
-        m_Window = m_PlatformManager->createWindow({"VKING Window", 1280, 720});
-        m_Window->setWindowCloseRequestCallbackEventFN([]([[maybe_unused]] Types::Window* window) {
-            VKING::Shutdown::request(Shutdown::Reason::REASON_USER_REQUEST, "Window Close Request Received.");
-            return true;
-        });
+        //m_PlatformManager = VKING::EngineConfig::selectPlatform({.platformType = Types::Platform::PlatformType::PLATFORM_NO_PREFERENCE, .backendType = Types::Platform::BackendType::VULKAN});
+        //m_Window = m_PlatformManager->createWindow({"VKING Window", 1280, 720});
+        //m_Window->setWindowCloseRequestCallbackEventFN([]([[maybe_unused]] Types::Window* window) {
+        //    VKING::Shutdown::request(Shutdown::Reason::REASON_USER_REQUEST, "Window Close Request Received.");
+        //    return true;
+        //});
     }
 
     void Application::run() {
@@ -79,7 +77,7 @@ namespace VKING {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             //VKING::Shutdown::request(VKING::Shutdown::Reason::REASON_FATAL_ERROR, "No work to do");
 
-            m_Window->pollEvents();
+            //m_Window->pollEvents();
 
         }
 

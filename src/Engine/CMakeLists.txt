@@ -2,15 +2,18 @@ add_library(VKING_Engine STATIC
         Application.ixx
         include/VKING/MainCreator.hpp
         EntryPoint.cpp
-        Config/ConfigFns.cpp
         Logging/Logger.cpp
         Logging/LoggerTemplates.hpp
         Logging/LoggerStableCABI.h
-        Logging/LoggerConfig.hpp
         Plugins/PluginABIBaseSpec.h
         include/VKING/CPluginInterface.h
         include/VKING/Logger.hpp
         Plugins/PluginVKING_CALLDef.h
+        Signals/Signals.cpp
+        Signals/Signals.hpp
+        Types/Scored.hpp
+        Logging/LoggerHost.hpp
+        Logging/LoggerHost.hpp
 )
 
 # -----------------------------------------------------------------------------
@@ -26,7 +29,6 @@ target_sources(VKING_Engine
         FILES
         Application.ixx
         EntryPointCallbacks.ixx
-        Config/ConfigConstants.ixx
         Plugins/PluginHost.ixx
 )
 
