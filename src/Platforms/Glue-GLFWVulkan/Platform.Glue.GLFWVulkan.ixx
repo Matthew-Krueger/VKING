@@ -39,7 +39,7 @@ namespace VKING::Platform::Glue {
          * @return A fully initialized instance of GLFWVulkan.
          */
     public:
-        explicit GLFWVulkan(const Types::Platform::CreateFn pfn_CreateFunctionArchive) : PlatformManager(Types::Platform::BackendType::VULKAN, Types::Platform::PlatformType::GLFW, PlatformSpecification::PlatformCreateInfo{pfn_CreateFunctionArchive}){};
+        explicit GLFWVulkan(const Types::Platform::PlatformManager::PlatformSpecification::PlatformCreateInfo createInfo) : PlatformManager(Types::Platform::BackendType::VULKAN, Types::Platform::PlatformType::GLFW, createInfo){};
 
         std::unique_ptr<Types::Window> createWindow(const Types::Window::WindowCreateInfo &windowCreateInfo) override;
 
@@ -51,8 +51,15 @@ namespace VKING::Platform::Glue {
 
 }
 
+export extern "C" void VKING_Platform_Glue_GLFWVulkan_Destroy(
+    VKING::Types::Platform::PlatformManager* p
+) {
+    delete p;
+}
+
 // now, we create a c linkage specifically to create this object
 export extern "C" VKING::Types::Platform::PlatformManager* VKING_Platform_Glue_GLFWVulkan_Create(){
     PlatformGLFWVulkanLogger::record().debug("Invoked the GLFWVulkan GLUE LIBRARY Create Function");
-    return new VKING::Platform::Glue::GLFWVulkan(VKING_Platform_Glue_GLFWVulkan_Create);
+    return new VKING::Platform::Glue::GLFWVulkan({VKING_Platform_Glue_GLFWVulkan_Create, VKING_Platform_Glue_GLFWVulkan_Destroy});
 }
+

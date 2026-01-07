@@ -30,8 +30,6 @@ export namespace VKING::Types::Platform {
     class RHI;
     class PlatformManager;
 
-    using CreateFn = PlatformManager* (*)();
-
     /**
      * @brief Enumerates the different graphics backends supported by the platform.
      *
@@ -173,7 +171,18 @@ export namespace VKING::Types::Platform {
                  * that no creation function has been assigned. Users of this variable should verify
                  * that it is not null before invoking the function to avoid undefined behavior.
                  */
-                CreateFn pfn_PlatformManagerCreate = nullptr;
+                PlatformManager* (*pfn_PlatformManagerCreate)() = nullptr;
+
+                /**
+                 * @brief Function pointer for destroying a `PlatformManager` instance.
+                 *
+                 * The `pfn_PlatformManagerDestroy` function pointer is used to deallocate
+                 * and clean up resources associated with a `PlatformManager` instance.
+                 * It ensures proper cleanup of platform-specific `PlatformManager` objects created dynamically.
+                 *
+                 */
+                void (*pfn_PlatformManagerDestroy)(PlatformManager*) = nullptr;
+
             };
 
             /**
