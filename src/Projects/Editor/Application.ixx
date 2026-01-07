@@ -18,15 +18,15 @@
 
 module;
 #include <iostream>
+#include <VKING/Logger.hpp>
 
 export module VKING.Editor.Application;
 
-import VKING.Log;
 import VKING.Application;
 
 
 export namespace VKING::Editor {
-    using EditorLog = Log::Named<"Editor">;
+    using EditorLog = Logger::Named<"Editor">;
 
     class EditorApplication : public Application {
     public:

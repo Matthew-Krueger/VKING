@@ -19,14 +19,16 @@
 //
 // Created by Matthew Krueger on 1/4/26.
 //
+module;
+#include "../../../Engine/include/VKING/Logger.hpp"
+
 
 export module VKING.Platform.Glue.GLFWVulkan;
 
 import VKING.Types.Platform;
-import VKING.Log;
 import VKING.Types.Window;
 
-using PlatformGLFWVulkanLogger = VKING::Log::Named<"PlatformCreator">;
+using PlatformGLFWVulkanLogger = VKING::Logger::Named<"PlatformCreator">;
 
 namespace VKING::Platform::Glue {
     export class GLFWVulkan final : public Types::Platform::PlatformManager {

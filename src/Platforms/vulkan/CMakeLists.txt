@@ -85,6 +85,7 @@ target_link_libraries(VKING_Platform_Vulkan
         PRIVATE
         # Internal dependency – not propagated to consumers
         Vulkan::Vulkan
+        fmt::fmt-header-only
         PUBLIC
         VKING::SharedResources
         VKING::Types

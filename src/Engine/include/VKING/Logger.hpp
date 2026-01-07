@@ -17,15 +17,14 @@
  */
 
 //
-// Created by Matthew Krueger on 1/6/26.
+// Created by Matthew Krueger on 1/7/26.
 //
-module;
-#include "../../../Engine/include/VKING/Logger.hpp"
 
+#pragma once
 
-export module VKING.Platform.GLFW:Logger;
+#include "CPluginInterface.h"
+#include "../../Logging/LoggerTemplates.hpp"
 
-
-namespace VKING::Platform::GLFW {
-    using ModuleLogger = Logger::Named<"GLFW (native window)">;
-}
+#ifdef VKING_INCLUDE_LOGGING_CONFIG
+#include "../../Logging/LoggerConfig.hpp"
+#endif

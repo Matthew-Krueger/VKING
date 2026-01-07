@@ -22,11 +22,11 @@
 module;
 #include <chrono>
 #include <thread>
+#include "../include/VKING/Logger.hpp"
 
 
 export module VKING.Application;
 
-import VKING.Log;
 import VKING.Types.Platform;
 import VKING.EngineConfig;
 import VKING.Types.Window;

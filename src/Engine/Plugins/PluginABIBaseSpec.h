@@ -19,13 +19,36 @@
 //
 // Created by Matthew Krueger on 1/6/26.
 //
-module;
-#include "../../../Engine/include/VKING/Logger.hpp"
 
+#pragma once
 
-export module VKING.Platform.GLFW:Logger;
+#include "../Logging/LoggerStableCABI.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace VKING::Platform::GLFW {
-    using ModuleLogger = Logger::Named<"GLFW (native window)">;
+#include <stdint.h>
+
+    // we need to define our abi spec
+    typedef struct VKING_ABI_SPEC {
+        /**
+        * @brief The ABI version the engine is exposing
+        */
+        uint32_t abiVersion;
+
+        /**
+         * @brief Size of the ABI struct
+         */
+        uint32_t structSize;
+
+        /**
+         * @brief The spec for the logging abi
+         */
+        const VKING_Logging_API *loggingAPISpec;
+
+    } VKING_ABI_SPEC;
+
+#ifdef __cplusplus
 }
+#endif

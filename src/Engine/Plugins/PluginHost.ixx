@@ -17,15 +17,29 @@
  */
 
 //
-// Created by Matthew Krueger on 1/6/26.
+// Created by Matthew Krueger on 1/7/26.
 //
 module;
-#include "../../../Engine/include/VKING/Logger.hpp"
+#include "../Logging/LoggerConfig.hpp"
+#include "PluginABIBaseSpec.h"
+
+export module VKING.PluginHost;
 
 
-export module VKING.Platform.GLFW:Logger;
+export namespace VKING::PluginHost {
+    /**
+     * @brief Gets the host specification for plugins
+     * @return The Plugin Host specification, the ABI spec.
+     */
+    const VKING_ABI_SPEC *hostsideGetHostABISpec() {
+        static const VKING_ABI_SPEC api = {
+            .abiVersion = 1,
+            .structSize = sizeof(VKING_ABI_SPEC),
+            .loggingAPISpec = Logger::getLoggingAPISpec()
+        };
 
+        return &api;
 
-namespace VKING::Platform::GLFW {
-    using ModuleLogger = Logger::Named<"GLFW (native window)">;
+    }
+
 }

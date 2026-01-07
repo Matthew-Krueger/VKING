@@ -19,13 +19,20 @@
 //
 // Created by Matthew Krueger on 1/6/26.
 //
-module;
-#include "../../../Engine/include/VKING/Logger.hpp"
 
+#pragma once
 
-export module VKING.Platform.GLFW:Logger;
+#include "LoggerStableCABI.h"
 
+namespace VKING::Logger {
 
-namespace VKING::Platform::GLFW {
-    using ModuleLogger = Logger::Named<"GLFW (native window)">;
+    /// Default log pattern used for both console and file output
+    static constexpr auto DEFAULT_LOG_PATTERN = "%^[%Y-%m-%d %H:%M:%S.%f] [%n] [%l] [%s:%#] %v %$";
+    /// Default file path for log output
+    static constexpr auto DEFAULT_LOG_FILE_PATH = "VKING.log";
+
+    const VKING_Logging_API *getLoggingAPISpec();
+
+    void Init(const std::string& fileName, const VKING_Logging_Level initialLevel = VKING_LOG_INFO);
+
 }

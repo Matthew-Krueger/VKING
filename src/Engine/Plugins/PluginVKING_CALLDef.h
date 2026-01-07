@@ -1,5 +1,5 @@
 /*
- *         VKING: A high-performance, module-first game engine.
+*         VKING: A high-performance, module-first game engine.
  *         Copyright (C) 2026 Matthew Krueger
  *
  *         This program is free software: you can redistribute it and/or modify
@@ -19,13 +19,12 @@
 //
 // Created by Matthew Krueger on 1/6/26.
 //
-module;
-#include "../../../Engine/include/VKING/Logger.hpp"
+
+#pragma once
 
 
-export module VKING.Platform.GLFW:Logger;
-
-
-namespace VKING::Platform::GLFW {
-    using ModuleLogger = Logger::Named<"GLFW (native window)">;
-}
+#if defined(_WIN32)
+#define VKING_CALL __cdecl
+#else
+#define VKING_CALL
+#endif

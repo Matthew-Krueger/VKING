@@ -27,15 +27,17 @@ module;
 #define VKING_INCLUDE_WIN_MAIN
 #include <VKING/MainCreator.hpp>
 
+#define VKING_INCLUDE_LOGGING_CONFIG
+#include <VKING/Logger.hpp>
+
 import VKING.Editor.Application;
-import VKING.Log;
 
 module VKING.EntryPointCallbacks;
 
-using EditorMainLogger = VKING::Log::Named<"EditorMain">;
+using EditorMainLogger = VKING::Logger::Named<"EditorMain">;
 
 void VKING::registerLogger() {
-    Log::Init("VKING-Editor.log", Log::Level::trace);
+    Logger::Init("VKING-Editor.log", Logger::Level::VKING_LOG_TRACE);
 }
 
 

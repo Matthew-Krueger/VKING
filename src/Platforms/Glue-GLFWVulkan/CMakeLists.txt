@@ -87,6 +87,7 @@ target_link_libraries(VKING_Platform_Glue_GLFWVulkan
         Vulkan::Vulkan
         VKING::Platform::GLFW # technically I believe this library should force these symbols to load?
         VKING::Platform::Vulkan # technically I believe this library should force these symbols to load?
+        fmt::fmt-header-only
         PUBLIC
         VKING::SharedResources
         VKING::Types

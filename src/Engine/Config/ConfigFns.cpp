@@ -20,6 +20,10 @@
 // Created by Matthew Krueger on 1/5/26.
 //
 
+module;
+#include "../include/VKING/Logger.hpp"
+
+
 module VKING.EngineConfig;
 import VKING.Types.Platform;
 
@@ -49,11 +53,9 @@ import VKING.Platform.Glue.GLFWVulkan;
 #error "VKING Engine cannot be built: At least one platform-backend glue (e.g., GLFW+Vulkan) must be enabled."
 #endif
 
-import VKING.Log;
-
 namespace VKING::EngineConfig {
 
-    using EngineConfigurationLogger = Log::Named<"EngineConfig">;
+    using EngineConfigurationLogger = Logger::Named<"EngineConfig">;
 
     // === Full config table with precomputed scores and factory ===
     const std::vector<ScoredType<Types::Platform::PlatformManager::PlatformSpecification>> &getAvailablePlatformConfigurations() {

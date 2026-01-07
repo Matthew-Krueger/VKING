@@ -87,6 +87,7 @@ target_link_libraries(VKING_Platform_GLFW
         PRIVATE
         # Internal dependency – not propagated to consumers
         glfw
+        fmt::fmt-header-only
         PUBLIC
         VKING::SharedResources
         VKING::Types

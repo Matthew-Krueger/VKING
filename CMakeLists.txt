@@ -43,6 +43,7 @@ include(VKING_Warnings)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(FMT REQUIRED)
 
 find_package(Vulkan REQUIRED)
 if(Vulkan_FOUND)

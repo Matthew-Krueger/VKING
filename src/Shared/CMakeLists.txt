@@ -31,7 +31,6 @@ target_sources(VKING_Shared_Resources
         PUBLIC
         FILE_SET CXX_MODULES TYPE CXX_MODULES
         FILES
-        src/VKING/Log.ixx
 )
 
 # -----------------------------------------------------------------------------
@@ -87,7 +86,6 @@ target_link_libraries(VKING_Shared_Resources
         # Internal dependency – not propagated to consumers
         PUBLIC
         glm::glm
-        spdlog::spdlog
         # Public dependencies go here (e.g., Vulkan::Vulkan if you expose it)
         # Vulkan::Vulkan
 )

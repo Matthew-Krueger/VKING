@@ -23,12 +23,12 @@
 #define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
 #include <VKING/MainCreator.hpp>
 #include <VKING/Signals.hpp>
+#include <VKING/Logger.hpp>
 
 import VKING.Application;
-import VKING.Log;
 import VKING.EntryPointCallbacks;
 
-static constexpr VKING::Log::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKING::Log::Level::trace;
+static constexpr VKING::Logger::Level VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL = VKING::Logger::Level::VKING_LOG_TRACE;
 
 /* Actual Main function */
 int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
@@ -38,10 +38,10 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
     // no matter what we will override the logger level here
     // save what the consumer had set
     // and put it back right before we start
-    VKING::Log::Level previousLevel = VKING::Log::getLevel();
-    VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
+    VKING::Logger::Level previousLevel = VKING::Logger::getLevel();
+    VKING::Logger::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
 
-    using EntryPointLogger = VKING::Log::Named<"EntryPoint">;
+    using EntryPointLogger = VKING::Logger::Named<"EntryPoint">;
     EntryPointLogger::record().info("Global Logger Sinks Registered via VKING::RegisterLogger() callback. Starting VKING");
 
     VKING::Shutdown::registerInterruptHandler();
@@ -53,7 +53,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
     // now put it back (before we enter the loop, so we can reuse the variable
     // otherwise there's some weird issues, so we're doing the level dance and pulling it right back out
     // but it must be read in the loop, so we can reuse the variable
-    VKING::Log::setLevel(previousLevel);
+    VKING::Logger::setLevel(previousLevel);
 
     bool shouldRestart = true;
     uint32_t restartCount = 0;
@@ -61,8 +61,8 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
         // no matter what we will override the logger level here
         // save what the consumer had set
         // and put it back right before we start
-        previousLevel = VKING::Log::getLevel();
-        VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
+        previousLevel = VKING::Logger::getLevel();
+        VKING::Logger::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
 
         // print a helpful message about whether or not this is the first start
         // in this invocation
@@ -74,7 +74,7 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
 
         // start the application respecting consumer's log level
         EntryPointLogger::record().info("Starting new application, calling VKING::createApplication(), respecting consumer log level");
-        VKING::Log::setLevel(previousLevel);
+        VKING::Logger::setLevel(previousLevel);
         auto application = VKING::createApplication();
 
         // run the event loop
@@ -84,8 +84,8 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
         // no matter what we will override the logger level here
         // save what the consumer had set
         // and put it back right before we start
-        previousLevel = VKING::Log::getLevel();
-        VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
+        previousLevel = VKING::Logger::getLevel();
+        VKING::Logger::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
 
         // Check the shutdown condition and whether or not we should restart
         EntryPointLogger::record().info("Application finished running. Checking for shutdown condition.");
@@ -103,27 +103,27 @@ int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** _argv){
         // call the destructor, respecting the consumer's log level choice
         EntryPointLogger::record().info("Deleting application.");
         // once more with the log level dance
-        VKING::Log::setLevel(previousLevel);
+        VKING::Logger::setLevel(previousLevel);
         application.reset(); // to control the lifetime and invalidate this pointer.
 
-        previousLevel = VKING::Log::getLevel();
-        VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
+        previousLevel = VKING::Logger::getLevel();
+        VKING::Logger::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
 
         EntryPointLogger::record().info("Application deleted.");
 
         // and clear the shutdown request just in case, no log needed it will only confuse readers of the log
         VKING::Shutdown::clearRequest();
 
-        VKING::Log::setLevel(previousLevel);
+        VKING::Logger::setLevel(previousLevel);
 
     }
 
     // one last message at *our* controlled log level, doing the dance one last time
     // putting it back for global destructors
-    previousLevel = VKING::Log::getLevel();
-    VKING::Log::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
+    previousLevel = VKING::Logger::getLevel();
+    VKING::Logger::setLevel(VKING_CONTROLLED_LIFECYCLE_LOG_LEVEL);
     EntryPointLogger::record().info("Exiting, no restart requested. BYE!");
-    VKING::Log::setLevel(previousLevel);
+    VKING::Logger::setLevel(previousLevel);
 
     return 0;
 
