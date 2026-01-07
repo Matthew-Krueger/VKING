@@ -20,11 +20,14 @@
 // Created by Matthew Krueger on 1/6/26.
 //
 
-#pragma once
+#ifndef VKING_CALLDEF_H
+#define VKING_CALLDEF_H
 
 
 #if defined(_WIN32)
 #define VKING_CALL __cdecl
 #else
 #define VKING_CALL
+#endif
+
 #endif

@@ -1,26 +1,32 @@
-/*
- *         VKING: A high-performance, module-first game engine.
- *         Copyright (C) 2026 Matthew Krueger
+/**
+ * @file PluginABIBaseSpec.h
+ * @brief Top-level host ABI specification passed to VKING plugins.
  *
- *         This program is free software: you can redistribute it and/or modify
- *         it under the terms of the GNU General Public License as published by
- *         the Free Software Foundation, either version 3 of the License, or
- *         (at your option) any later version.
+ * This header defines the root ABI structure that the VKING host (engine core /
+ * executable) passes to dynamically loaded plugins during plugin initialization.
  *
- *         This program is distributed in the hope that it will be useful,
- *         but WITHOUT ANY WARRANTY; without even the implied warranty of
- *         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *         GNU General Public License for more details.
+ * The goal of this structure is to provide plugins access to host services
+ * (e.g., logging) via stable C function tables without linking against host C++
+ * symbols or the C++ standard library.
  *
- *         You should have received a copy of the GNU General Public License
- *         along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * ABI Stability Rules:
+ * - This header is intended to be usable from C99 and C++.
+ * - Do not add C++ types (std::string, std::vector, references, exceptions).
+ * - Do not reorder fields. Extend by appending new fields at the end.
+ * - Use `abiVersion` and `structSize` to allow forward/backward compatibility checks.
+ *
+ * Lifetime:
+ * - The host owns the `VKING_ABI_SPEC` instance and all nested API tables it
+ *   points to.
+ * - Plugins may store pointers received via this struct for as long as the host
+ *   guarantees they remain valid (typically the lifetime of the process or until
+ *   plugin shutdown).
  */
 
-//
-// Created by Matthew Krueger on 1/6/26.
-//
+#ifndef VKING_PLUGIN_ABI_BASE_SPEC_H
+#define VKING_PLUGIN_ABI_BASE_SPEC_H
 
-#pragma once
+#include <stdint.h>
 
 #include "../Logging/LoggerStableCABI.h"
 
@@ -28,27 +34,70 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+/**
+ * @struct VKING_ABI_SPEC
+ * @brief Root ABI table provided by the host to plugins.
+ *
+ * This struct is the primary entry point for host-provided services. It is
+ * commonly passed to a plugin initialization function such as:
+ *
+ * @code
+ * VKING_CALL bool VKING_PluginInit(const VKING_ABI_SPEC* host);
+ * @endcode
+ *
+ * Versioning:
+ * - `abiVersion` describes the major version of the host ABI.
+ * - `structSize` is the size (in bytes) of the host-provided `VKING_ABI_SPEC`
+ *   instance. This supports ABI extension by appending new fields.
+ *
+ * Forward compatibility guideline for plugins:
+ * - Verify `host->abiVersion` is a version you support.
+ * - Verify `host->structSize` is at least large enough to contain the fields
+ *   you intend to use.
+ *
+ * @note Plugins should treat this structure as read-only.
+ */
+typedef struct VKING_ABI_SPEC {
+    /**
+     * @brief Host ABI major version.
+     *
+     * Plugins should reject hosts with an ABI version they do not support.
+     * Increment this value only for breaking ABI changes.
+     */
+    uint32_t abiVersion;
 
-    // we need to define our abi spec
-    typedef struct VKING_ABI_SPEC {
-        /**
-        * @brief The ABI version the engine is exposing
-        */
-        uint32_t abiVersion;
+    /**
+     * @brief Size in bytes of the `VKING_ABI_SPEC` struct instance provided by the host.
+     *
+     * This enables ABI extension. A newer host may provide a larger `structSize`
+     * with additional fields appended to the end of this struct.
+     */
+    uint32_t structSize;
 
-        /**
-         * @brief Size of the ABI struct
-         */
-        uint32_t structSize;
+    /**
+     * @brief Pointer to the host-provided logging API table.
+     *
+     * This table allows plugins to emit log messages to the host's logging system
+     * without depending on the host's internal logging library (e.g., spdlog).
+     *
+     * Ownership and lifetime:
+     * - Owned by the host.
+     * - Valid for at least the lifetime of the plugin after successful initialization,
+     *   unless the host explicitly documents otherwise.
+     *
+     * @note May be NULL if the host does not provide logging (plugins should handle this).
+     */
+    const VKING_Logging_API *loggingAPISpec;
 
-        /**
-         * @brief The spec for the logging abi
-         */
-        const VKING_Logging_API *loggingAPISpec;
-
-    } VKING_ABI_SPEC;
+    /* Future host services should be appended here, e.g.:
+     * - const VKING_Filesystem_API* filesystem;
+     * - const VKING_Allocator_API* allocator;
+     * - const VKING_Threading_API* threading;
+     */
+} VKING_ABI_SPEC;
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
+
+#endif /* VKING_PLUGIN_ABI_BASE_SPEC_H */

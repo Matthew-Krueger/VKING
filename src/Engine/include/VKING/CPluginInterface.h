@@ -20,6 +20,9 @@
 // Created by Matthew Krueger on 1/7/26.
 //
 
-#pragma once
+#ifndef VKING_CPLUGININTERFACE_H
+#define VKING_CPLUGININTERFACE_H
 
 #include "../../Plugins/PluginABIBaseSpec.h"
+
+#endif
