@@ -22,9 +22,5 @@
 
 #pragma once
 
-#include "CPluginInterface.h"
-#include "../../Logging/LoggerTemplates.hpp"
-
-#ifdef VKING_INCLUDE_LOGGING_CONFIG
-#include "../../Logging/LoggerConfig.hpp"
-#endif
+#include "../ABI/CPluginInterface.h"
+#include "../../Engine/Plugins/Logging/LoggerTemplates.hpp"

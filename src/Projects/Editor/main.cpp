@@ -28,7 +28,7 @@ module;
 #include <VKING/MainCreator.hpp>
 
 #define VKING_INCLUDE_LOGGING_CONFIG
-#include <VKING/Logger.hpp>
+#include <../../Engine/include/VKING/SDK/Logger.hpp>
 
 module VKING.EntryPointCallbacks;
 

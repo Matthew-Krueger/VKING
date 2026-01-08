@@ -2,18 +2,19 @@ add_library(VKING_Engine STATIC
         Application.ixx
         include/VKING/MainCreator.hpp
         EntryPoint.cpp
-        Logging/Logger.cpp
-        Logging/LoggerTemplates.hpp
-        Logging/LoggerStableCABI.h
-        Plugins/PluginABIBaseSpec.h
-        include/VKING/CPluginInterface.h
-        include/VKING/Logger.hpp
+        Plugins/Logging/Logger.cpp
+        Plugins/Logging/LoggerTemplates.hpp
+        Plugins/Logging/LoggerStableCABI.h
+        Plugins/VKINGHostToPluginABI.h
+        include/VKING/ABI/CPluginInterface.h
+        include/VKING/SDK/Logger.hpp
         Plugins/PluginVKING_CALLDef.h
         Signals/Signals.cpp
         Signals/Signals.hpp
         Types/Scored.hpp
-        Logging/LoggerHost.hpp
-        Logging/LoggerHost.hpp
+        Plugins/Logging/LoggerHost.hpp
+        Plugins/Logging/LoggerHost.hpp
+        Plugins/Render/RenderABISpec.h
 )
 
 # -----------------------------------------------------------------------------
@@ -30,11 +31,12 @@ target_sources(VKING_Engine
         Application.ixx
         EntryPointCallbacks.ixx
         Plugins/PluginHost.ixx
+        Plugins/Render/RenderPlugin.ixx
 )
 
 target_link_libraries(
         VKING_Engine
-        PRIVATE VKING::Platform::AvailableTargets spdlog::spdlog_header_only fmt::fmt-header-only
+        PRIVATE spdlog::spdlog_header_only fmt::fmt-header-only
         PUBLIC VKING::SharedResources fmt::fmt-header-only
 )
 

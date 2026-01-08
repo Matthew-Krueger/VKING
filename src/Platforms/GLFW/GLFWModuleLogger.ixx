@@ -20,7 +20,7 @@
 // Created by Matthew Krueger on 1/6/26.
 //
 module;
-#include "../../../Engine/include/VKING/Logger.hpp"
+#include "../../Engine/include/VKING/SDK/Logger.hpp"
 
 
 export module VKING.Platform.GLFW:Logger;

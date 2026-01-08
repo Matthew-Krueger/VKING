@@ -28,14 +28,14 @@
 
 #include <stdint.h>
 
-#include "../Logging/LoggerStableCABI.h"
+#include "Logging/LoggerStableCABI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @struct VKING_ABI_SPEC
+ * @struct VKING_Hostside_API
  * @brief Root ABI table provided by the host to plugins.
  *
  * This struct is the primary entry point for host-provided services. It is
@@ -57,7 +57,7 @@ extern "C" {
  *
  * @note Plugins should treat this structure as read-only.
  */
-typedef struct VKING_ABI_SPEC {
+typedef struct VKING_Host_ABI {
     /**
      * @brief Host ABI major version.
      *
@@ -94,7 +94,7 @@ typedef struct VKING_ABI_SPEC {
      * - const VKING_Allocator_API* allocator;
      * - const VKING_Threading_API* threading;
      */
-} VKING_ABI_SPEC;
+} VKING_Hostside_API;
 
 #ifdef __cplusplus
 } /* extern "C" */

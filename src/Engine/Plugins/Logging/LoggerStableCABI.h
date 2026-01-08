@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-#include "../Plugins/PluginVKING_CALLDef.h"
+#include "../PluginVKING_CALLDef.h"
 
 #ifdef __cplusplus
 extern "C" {

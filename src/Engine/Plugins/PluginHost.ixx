@@ -20,9 +20,9 @@
 // Created by Matthew Krueger on 1/7/26.
 //
 module;
-#include "PluginABIBaseSpec.h"
-#include <VKING/Logger.hpp>
-#include "../Logging/LoggerHost.hpp"
+#include "VKINGHostToPluginABI.h"
+#include <../include/VKING/SDK/Logger.hpp>
+#include "Logging/LoggerHost.hpp"
 export module VKING.PluginHost;
 
 
@@ -31,11 +31,11 @@ export namespace VKING::PluginHost {
      * @brief Gets the host specification for plugins
      * @return The Plugin Host specification, the ABI spec.
      */
-    const VKING_ABI_SPEC *hostsideGetHostABISpec() {
-        static const VKING_ABI_SPEC api = {
+    const VKING_Hostside_API *getHostsideABISpec() {
+        static const VKING_Hostside_API api = {
             .abiVersion = 1,
-            .structSize = sizeof(VKING_ABI_SPEC),
-            .loggingAPISpec = Logger::Host::getLoggingAPISpec()
+            .structSize = sizeof(VKING_Hostside_API),
+            .loggingAPISpec = Logger::Host::hostsideGetLoggingAPISpec()
         };
 
         return &api;

@@ -23,6 +23,6 @@
 #ifndef VKING_CPLUGININTERFACE_H
 #define VKING_CPLUGININTERFACE_H
 
-#include "../../Plugins/PluginABIBaseSpec.h"
+#include "../../../Plugins/VKINGHostToPluginABI.h"
 
 #endif

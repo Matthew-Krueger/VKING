@@ -23,11 +23,11 @@ module;
 #include <chrono>
 #include <thread>
 #include <VKING/Engine/Shutdown.hpp>
-#include <VKING/Logger.hpp>
+#include <VKING/SDK/Logger.hpp>
 export module VKING.Application;
 
-import VKING.Types.Platform;
-import VKING.Types.Window;
+//import VKING.Types.Platform;
+//import VKING.Types.Window;
 
 export namespace VKING {
     class Application {

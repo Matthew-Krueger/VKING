@@ -20,7 +20,7 @@
 // Created by Matthew Krueger on 1/5/26.
 //
 module;
-#include "VKING/Logger.hpp"
+#include "include/VKING/SDK/Logger.hpp"
 
 export module VKING.EntryPointCallbacks;
 import VKING.Application;

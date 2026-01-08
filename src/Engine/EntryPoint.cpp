@@ -23,8 +23,8 @@
 #define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
 #include <VKING/MainCreator.hpp>
 #include <VKING/Engine/Shutdown.hpp>
-#include <VKING/Logger.hpp>
-#include "Logging/LoggerHost.hpp"
+#include <VKING/SDK/Logger.hpp>
+#include "Plugins/Logging/LoggerHost.hpp"
 
 import VKING.Application;
 import VKING.EntryPointCallbacks;

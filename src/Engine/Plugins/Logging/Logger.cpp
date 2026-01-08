@@ -22,7 +22,7 @@
 #include "LoggerStableCABI.h"
 #include "LoggerTemplates.hpp"
 #include "LoggerHost.hpp"
-#include <VKING/CPluginInterface.h>
+#include "../VKINGHostToPluginABI.h"
 
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
@@ -49,7 +49,7 @@ namespace VKING::Logger {
     VKING_Logging_Level getLogLevelFromSpdlogLevel(const spdlog::level::level_enum level);
 
 
-    const VKING_Logging_API * Host::getLoggingAPISpec() {
+    const VKING_Logging_API * Host::hostsideGetLoggingAPISpec() {
 
         static VKING_Logging_API api ={
             .abiVersion = 1,
@@ -129,7 +129,7 @@ namespace VKING::Logger {
             static std::atomic_bool s_LogInitialized{false};
             if (!s_LogInitialized.exchange(true)) {
 
-                detail::install(getLoggingAPISpec());
+                detail::install(hostsideGetLoggingAPISpec());
 
                 spdlog::set_level(getLogLevelFromVKING_Logging_Level(loggerCreateInfo.level));
 
