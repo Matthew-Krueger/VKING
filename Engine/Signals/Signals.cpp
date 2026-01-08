@@ -191,10 +191,37 @@ namespace VKING::Shutdown {
         // is a torn write between s_ShutdownRequestedSignalSafe and s_RequestReasonSignalSafe.
         // so.... meh
 
+        // but we're still going to do it
+#ifndef _WIN32
+        // Block SIGINT and SIGTERM temporarily while we reset signal-safe state
+        sigset_t new_mask;
+        sigset_t old_mask;
+        sigemptyset(&new_mask);
+        sigaddset(&new_mask, SIGINT);
+        sigaddset(&new_mask, SIGTERM);
+
+        // Block the signals and save the old mask
+        if (sigprocmask(SIG_BLOCK, &new_mask, &old_mask) == -1) {
+            // If we fail to block, we still proceed with clearing — best effort.
+            // (This is extremely rare, and logging here would be unsafe if called from a signal context,
+            //  but clearRequest() is only called from normal code.)
+            const auto msg = "VKING::Shutdown ERROR: Could not clear SIGINT handler. Signal handling may be incomplete. Consider restarting.\n";
+            write(STDERR_FILENO, msg, strlen(msg));
+        }
+#endif
+
         // we are now safe to work on the async system
         detail::s_RequestReasonSignalSafe = static_cast<volatile sig_atomic_t>(Reason::REASON_NONE);
         detail::s_ShutdownRequestedSignalSafe = false; // we no longer want it
         // we have no reason to shutdown
+
+#ifndef _WIN32
+        // Restore the previous signal mask (unblocks if they were unblocked before)
+        if (sigprocmask(SIG_SETMASK, &old_mask, nullptr) == -1) {
+            const auto msg = "VKING::Shutdown ERROR: Could not restore old signal handling after clearing state. Signal handling may be incomplete. Consider restarting\n";
+            write(STDERR_FILENO, msg, strlen(msg));
+        }
+#endif
 
         // next, clear the thread safe
         detail::s_RequestReasonThreadSafe.store(Reason::REASON_NONE, std::memory_order_release);
