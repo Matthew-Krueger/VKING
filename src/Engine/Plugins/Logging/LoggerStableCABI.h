@@ -56,7 +56,7 @@ typedef enum VKING_Logging_Level {
 } VKING_Logging_Level;
 
 /**
- * @struct VKING_Logging_API
+ * @struct VKING_Hostside_Logging_API
  * @brief Function table for logging services provided by the host to plugins.
  *
  * Plugins should treat this structure as read-only.
@@ -71,7 +71,7 @@ typedef enum VKING_Logging_Level {
  * - Validate `structSize` is at least large enough to contain the fields the
  *   plugin intends to use.
  */
-typedef struct VKING_Logging_API {
+typedef struct VKING_Hostside_Logging_API {
     /**
      * @brief ABI version of this logging API table.
      *
@@ -125,7 +125,7 @@ typedef struct VKING_Logging_API {
      * @param level New global log level.
      */
     void (VKING_CALL*setGlobalLogLevel)(VKING_Logging_Level level);
-} VKING_Logging_API;
+} VKING_Hostside_Logging_API;
 
 #ifdef __cplusplus
 } /* extern "C" */

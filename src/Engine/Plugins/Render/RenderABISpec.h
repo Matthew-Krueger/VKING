@@ -25,6 +25,7 @@
 
 #include <stdint.h>
 #include "../PluginVKING_CALLDef.h"
+#include "../Logging/LoggerStableCABI.h"
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -83,6 +84,8 @@ typedef struct VKING_Plugin_Render_ABIspec {
 
     VKING_Plugin_Render_BackendType backendType;
     VKING_Plugin_Render_PlatformType platformType;
+
+    void(VKING_CALL* pfn_InstallLogger)(const VKING_Hostside_Logging_API*);
 
     VKING_Plugin_Render_Platform_Handle(VKING_CALL* pfn_CreatePlatform)(void);
     void (VKING_CALL* pfn_DestroyPlatform)(VKING_Plugin_Render_Platform_Handle);

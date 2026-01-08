@@ -90,7 +90,7 @@ namespace VKING::Logger {
          * @note This pointer must reference host-owned storage with lifetime at least
          *       as long as this binary may log (typically process lifetime).
          */
-        inline std::atomic<const VKING_Logging_API *> g_api{nullptr};
+        inline std::atomic<const VKING_Hostside_Logging_API *> g_api{nullptr};
 
         /**
          * @brief Install the host logging API table pointer for this binary.
@@ -108,7 +108,7 @@ namespace VKING::Logger {
          * @note This function is intentionally `noexcept` and uses `stderr` for
          *       diagnostics so it can be called early during startup.
          */
-        inline void install(const VKING_Logging_API *api) noexcept {
+        inline void install(const VKING_Hostside_Logging_API *api) noexcept {
             constexpr uint32_t expectedABIVersion = 1;
 
             if (!api) {
@@ -135,11 +135,11 @@ namespace VKING::Logger {
              * We require that the host struct is at least large enough to cover the
              * fields this wrapper expects to use.
              */
-            if (api->structSize < sizeof(VKING_Logging_API)) {
+            if (api->structSize < sizeof(VKING_Hostside_Logging_API)) {
                 std::fprintf(
                     stderr,
                     "Logging API struct too small: expected >= %zu, got %u\n",
-                    sizeof(VKING_Logging_API),
+                    sizeof(VKING_Hostside_Logging_API),
                     api->structSize
                 );
                 g_api.store(nullptr, std::memory_order_release);
@@ -162,7 +162,7 @@ namespace VKING::Logger {
          * @return Pointer to the installed `VKING_Logging_API` table, or nullptr if no
          *         table is installed.
          */
-        inline const VKING_Logging_API *api() noexcept {
+        inline const VKING_Hostside_Logging_API *api() noexcept {
             return g_api.load(std::memory_order_acquire);
         }
     } // namespace detail
@@ -185,7 +185,7 @@ namespace VKING::Logger {
      * @note This function is intentionally `noexcept` and uses `stderr` for
      *       diagnostics so it can be called early during startup.
      */
-    [[maybe_unused]] inline void install(const VKING_Logging_API *api) noexcept { detail::install(api); }
+    [[maybe_unused]] inline void install(const VKING_Hostside_Logging_API *api) noexcept { detail::install(api); }
 
     /**
      * @brief Helper struct to allow string literals as NTTP (non-type template parameters).

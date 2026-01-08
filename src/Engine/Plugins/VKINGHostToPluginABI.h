@@ -57,7 +57,7 @@ extern "C" {
  *
  * @note Plugins should treat this structure as read-only.
  */
-typedef struct VKING_Host_ABI {
+typedef struct VKING_Hostside_API {
     /**
      * @brief Host ABI major version.
      *
@@ -87,7 +87,7 @@ typedef struct VKING_Host_ABI {
      *
      * @note May be NULL if the host does not provide logging (plugins should handle this).
      */
-    const VKING_Logging_API *loggingAPISpec;
+    const VKING_Hostside_Logging_API *loggingAPISpec;
 
     /* Future host services should be appended here, e.g.:
      * - const VKING_Filesystem_API* filesystem;

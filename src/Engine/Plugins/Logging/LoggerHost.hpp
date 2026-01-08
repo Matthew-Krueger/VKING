@@ -58,7 +58,7 @@ namespace VKING::Logger::Host {
      *       into it. A typical implementation returns the address of a function-
      *       static `VKING_Logging_API` object.
      */
-    const VKING_Logging_API *hostsideGetLoggingAPISpec();
+    const VKING_Hostside_Logging_API *hostsideGetLoggingAPISpec();
 
     /**
      * @brief Initialize the host logging backend (e.g., spdlog sinks, levels, patterns).

@@ -49,11 +49,11 @@ namespace VKING::Logger {
     VKING_Logging_Level getLogLevelFromSpdlogLevel(const spdlog::level::level_enum level);
 
 
-    const VKING_Logging_API * Host::hostsideGetLoggingAPISpec() {
+    const VKING_Hostside_Logging_API * Host::hostsideGetLoggingAPISpec() {
 
-        static VKING_Logging_API api ={
+        static VKING_Hostside_Logging_API api ={
             .abiVersion = 1,
-            .structSize = sizeof(VKING_Logging_API),
+            .structSize = sizeof(VKING_Hostside_Logging_API),
             .logMessage = VKING_Logging_LogMessage,
             .getGlobalLogLevel = VKING_Logging_getGlobalLogLevel,
             .setGlobalLogLevel = VKING_Logging_setGlobalLogLevel
