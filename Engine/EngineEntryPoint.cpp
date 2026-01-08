@@ -21,7 +21,6 @@
 //
 
 #define VKING_SUPPRESS_ENTRY_POINT_MESSAGES
-#include <VKING/MainCreator.hpp>
 #include <VKING/Engine/Shutdown.hpp>
 #include <VKING/SDK/Logger.hpp>
 #include "Services/Logger/LoggerHost.hpp"

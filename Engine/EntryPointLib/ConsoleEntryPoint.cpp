@@ -17,27 +17,11 @@
  */
 
 //
-// Created by Matthew Krueger on 1/4/26.
+// Created by Matthew Krueger on 1/7/26.
 //
 
-module;
+extern int VKING_Main([[maybe_unused]] int argc, [[maybe_unused]] const char ** argv);
 
-#include <VKING/SDK/Logger.hpp>
-module VKING.EntryPointCallbacks;
-
-import VKING.Editor.Application;
-
-using EditorMainLogger = VKING::Logger::Named<"EditorMain">;
-
-VKING::Logger::CreateInfo VKING::getLoggerConfig() {
-    return{
-        "VKING-Editor.log",
-        Logger::Level::VKING_LOG_TRACE
-    };
+int main(int argc, const char **argv) {
+    VKING_Main(argc, argv);
 }
-
-std::unique_ptr<VKING::Application> VKING::createApplication() {
-    EditorMainLogger::record().info("Creating application.");
-    return std::make_unique<Editor::EditorApplication>();
-}
-

@@ -6,17 +6,22 @@
 # consumption by applications and plugins.
 # =============================================================================
 
+# =============================================================================
+# VKING Engine EntryPoint (Main Functions)
+# =============================================================================
+# Include the Main Functions Library
+# To use, link with either VKING::EntryPoint::GUI or VKING::EntryPoint::Console
+# =============================================================================
+add_subdirectory(EntryPointLib)
+
 # Static library containing all engine implementation files.
 # Files listed here are compiled directly into the library binary.
 add_library(VKING_Engine STATIC
         # Main application module interface
         Application.ixx
 
-        # Public API header for application entry points
-        include/VKING/MainCreator.hpp
-
         # Entry point implementation (main() function wrapper)
-        EntryPoint.cpp
+        EngineEntryPoint.cpp
 
         # Logger service implementation - compiled into engine binary
         # This is PRIVATE because plugins access logging through the C ABI, not this TU

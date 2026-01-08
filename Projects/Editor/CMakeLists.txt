@@ -35,6 +35,30 @@ target_sources(VKING_Editor
 target_link_libraries(VKING_Editor PRIVATE VKING::Engine)
 
 # =============================================================================
+# Entry Point Selection
+# =============================================================================
+# VKING provides two entry point aliases to handle platform-specific differences:
+#
+# - VKING::EntryPoint::Console
+#   • On Windows: Links to the console subsystem entry point (uses standard `main`)
+#   • On POSIX (Linux/macOS/etc.): Directly aliases the engine's `VKING_Main`
+#
+# - VKING::EntryPoint::GUI
+#   • On Windows: Links to the Windows subsystem entry point (wWinMain)
+#     → Automatically sets WINDOWS subsystem (no console window)
+#   • On POSIX: Also aliases `VKING_Main` (same as Console variant)
+#
+# The editor is a GUI application, so we link against VKING::EntryPoint::GUI
+# to ensure the correct Windows subsystem is used and no console window appears
+# on Windows builds. On non-Windows platforms, both targets are equivalent.
+#
+# PRIVATE is used because the editor executable does not expose the engine's
+# entry point or APIs to any further dependents.
+# =============================================================================
+target_link_libraries(VKING_Editor PRIVATE VKING::EntryPoint::GUI)
+
+
+# =============================================================================
 # Precompiled Headers
 # =============================================================================
 # Reuse the engine's precompiled headers to dramatically reduce compilation time.
